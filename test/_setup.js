@@ -3,7 +3,7 @@ const Assertion = chai.Assertion;
 
 global.expect = chai.expect;
 global.assert = chai.assert;
-global.Jo = require('../');
+global.Jo = require('../lib/index');
 
 
 Assertion.addChainableMethod('fail', function () {

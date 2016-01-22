@@ -33,5 +33,10 @@
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^3.1.0",
     "mocha": "^2.3.4"
+  },
+  "dependencies": {
+    "deep-equal": "^1.0.1",
+    "lodash.clone": "^4.0.1",
+    "lodash.isequal": "^4.0.0"
   }
 }
