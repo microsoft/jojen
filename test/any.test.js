@@ -1,13 +1,13 @@
 describe('any', () => {
     it('works for any values', () => {
-        expect(Jo.validate(undefined, Jo.any())).not.to.fail;
-        expect(Jo.validate(null, Jo.any())).not.to.fail;
-        expect(Jo.validate('fubar', Jo.any())).not.to.fail;
+        expect(Jo.any()).not.to.failOn(undefined);
+        expect(Jo.any()).not.to.failOn(null);
+        expect(Jo.any()).not.to.failOn('fubar');
     });
 
     it('requires values correctly', () => {
-        expect(Jo.validate(undefined, Jo.any())).to.fail;
-        expect(Jo.validate(null, Jo.any())).not.to.fail;
-        expect(Jo.validate('fubar', Jo.any())).not.to.fail;
+        expect(Jo.required()).to.failOn(undefined);
+        expect(Jo.required()).not.to.failOn(null);
+        expect(Jo.required()).not.to.failOn('fubar');
     });
 });
