@@ -1,10 +1,11 @@
 {
   "name": "jojen",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Expressive validator for Node and the browser, with a small footprint and awesome performance",
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
+    "sizeBrowser": "browserify lib/index.js -t babelify --presets es2015 | ccjs --compilation_level=ADVANCED_OPTIMIZATIONS | gzip | wc -c",
     "build": "babel lib --out-dir dist"
   },
   "repository": {
@@ -36,8 +37,6 @@
     "mocha": "^2.3.4"
   },
   "dependencies": {
-    "deep-equal": "^1.0.1",
-    "lodash.clone": "^4.0.1",
-    "lodash.isequal": "^4.0.0"
+    "deep-equal": "^1.0.1"
   }
 }
