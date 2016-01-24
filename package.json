@@ -31,7 +31,8 @@
     "babel-register": "^6.3.13",
     "chai": "^3.4.1",
     "eslint": "^1.10.3",
-    "eslint-config-airbnb": "^3.1.0",
+    "eslint-config-airbnb": "^4.0.0",
+    "joi": "^7.2.2",
     "mocha": "^2.3.4"
   },
   "dependencies": {
