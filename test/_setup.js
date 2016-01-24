@@ -6,8 +6,6 @@ const Assertion = chai.Assertion;
 global.expect = chai.expect;
 global.assert = chai.assert;
 
-Jo.load('en-joi');
-
 
 function prettyPrintSchema (schema) {
     return schema._rules.map((rule) => {
