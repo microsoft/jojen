@@ -17,12 +17,19 @@ function prettyPrintSchema (schema) {
     }).join('\n');
 }
 
+let validFns = [];
+
 chai.use(function (_chai, utils) {
     Assertion.addMethod('failOn', function (value, details) {
         const joValid = this._obj(Jo);
         const joiValid = this._obj(Joi);
 
         const pretty = prettyPrintSchema(joValid);
+
+        validFns.push({
+            Jojen: () => Jo.validate(value, joValid, () => {}),
+            Joi: () => Joi.validate(value, joiValid, () => {}),
+        });
 
         Jo.validate(value, joValid, (err) => {
             this.assert(
@@ -47,4 +54,25 @@ chai.use(function (_chai, utils) {
     }, function () {
         utils.flag(this, 'result.error', true);
     });
+});
+
+function runBench (iterations) {
+    console.log('Running head-to-head benchmark for Joi vs Jojen');
+
+    ['Jojen', 'Joi'].forEach((key) => {
+        var start = Date.now();
+        validFns.forEach((v) => {
+            for (let i = 0; i < iterations; i++) {
+                v[key]();
+            }
+        });
+
+        console.log(key + ' completed in ' + (Date.now() - start) + 'ms');
+    });
+}
+
+process.on('exit', function () {
+    if (process.env.JO_BENCH) {
+        runBench(2000);
+    }
 });
