@@ -5,7 +5,7 @@ Jojen is an updated take on [Joi](https://github.com/hapijs/joi)'s API. Joi has 
 Jojens goals are to:
  - Mostly match the Joi API with very few inconsistencies (see [compatibility](https://github.com/WatchBeam/jojen/blob/master/compatibility.md))
  - Fixes the inconsistent parts of Joi (again, see [compatibility](https://github.com/WatchBeam/jojen/blob/master/compatibility.md))
- - Perform reasonably well in a reasonably small package (currently 3.7 KB)
+ - Perform reasonably well (currently ~430% the speed of Joi) in a reasonably small package (currently 4.6 KB)
  - Support browsers, user-defined validations, and internationalisation.
 
 In its current state, Jojen is very much a work in progress. The foundation is there, and we'll be adding more features and validations in the coming weeks.

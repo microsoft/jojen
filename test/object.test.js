@@ -6,7 +6,7 @@ describe('object', () => {
                     context: { key: 'value' },
                     message: '"value" should not have "b"',
                     path: 'value',
-                    type: 'object.keys'
+                    type: 'object.unknown'
                 }
             ]);
         });
