@@ -1,4 +1,4 @@
-describe('number', () => {
+describe('function', () => {
     it('will only validate functions', () => {
         expect(Jo => Jo.func()).to.failOn('function() { console.log("yea!") }');
         expect(Jo => Jo.func()).to.failOn(null);
