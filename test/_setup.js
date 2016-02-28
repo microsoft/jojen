@@ -3,8 +3,8 @@ const Jo = require('../lib/index');
 const chai = require('chai');
 const Assertion = chai.Assertion;
 
-global.expect = chai.expect;
-global.assert = chai.assert;
+const expect = global.expect = chai.expect;
+const assert = global.assert = chai.assert;
 
 
 function prettyPrintSchema (schema) {
@@ -20,7 +20,7 @@ function prettyPrintSchema (schema) {
 let validFns = [];
 
 chai.use(function (_chai, utils) {
-    Assertion.addMethod('failOn', function (value, details) {
+    Assertion.addMethod('failOn', function (value, details, ignoreCompability) {
         const joValid = this._obj(Jo);
         const joiValid = this._obj(Joi);
 
@@ -45,7 +45,7 @@ chai.use(function (_chai, utils) {
             var joiError = Joi.validate(value, joiValid).error;
 
 
-            if (err && !joiError) {
+            if (err && !joiError && !ignoreCompability) {
                 assert.fail(err, null, 'Jojen failed, but Joi did not. Jojen\'s output: \n' + JSON.stringify(err, undefined, 4));
             } else if (!err && joiError) {
                 assert.fail(null, joiError, 'Joi failed, but Jojen did not. Joi\'s output: \n' + JSON.stringify(joiError, undefined, 4));
