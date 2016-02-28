@@ -7,22 +7,23 @@ const expect = global.expect = chai.expect;
 const assert = global.assert = chai.assert;
 
 
-function prettyPrintSchema (schema) {
+function prettyPrintSchema(schema) {
     return schema._rules.map((rule) => {
         const args = rule._params
-                .map((param) => JSON.stringify(param))
-                .join(', ');
+        .map((param) => JSON.stringify(param))
+        .join(', ');
 
         return `${rule.name()}(${args})`;
     }).join('\n');
 }
 
-let validFns = [];
+const validFns = [];
 
-chai.use(function (_chai, utils) {
-    Assertion.addMethod('failOn', function (value, details, ignoreCompability) {
+chai.use((_chai, utils) => {
+    Assertion.addMethod('failOn', function (value, details, ignoreCompability, options) {
         const joValid = this._obj(Jo);
         const joiValid = this._obj(Joi);
+        options = options || {};
 
         const pretty = prettyPrintSchema(joValid);
 
@@ -31,7 +32,7 @@ chai.use(function (_chai, utils) {
             Joi: () => Joi.validate(value, joiValid, () => {}),
         });
 
-        Jo.validate(value, joValid, (err) => {
+        Jo.validate(value, joValid, options, (err) => {
             this.assert(
                 !!err,
                 'expected to have failed: ' + pretty,
@@ -42,11 +43,15 @@ chai.use(function (_chai, utils) {
                 expect(err && err.details).to.deep.equal(details);
             }
 
-            var joiError = Joi.validate(value, joiValid).error;
+            const joiError = Joi.validate(value, joiValid, options).error;
 
 
             if (err && !joiError && !ignoreCompability) {
-                assert.fail(err, null, 'Jojen failed, but Joi did not. Jojen\'s output: \n' + JSON.stringify(err, undefined, 4));
+                assert.fail(
+                    err,
+                    null,
+                    'Jojen failed, but Joi did not. Jojen\'s output: \n' + JSON.stringify(err, undefined, 4)
+                );
             } else if (!err && joiError) {
                 assert.fail(null, joiError, 'Joi failed, but Jojen did not. Joi\'s output: \n' + JSON.stringify(joiError, undefined, 4));
             }
@@ -56,11 +61,11 @@ chai.use(function (_chai, utils) {
     });
 });
 
-function runBench (iterations) {
+function runBench(iterations) {
     console.log('Running head-to-head benchmark for Joi vs Jojen');
 
     ['Jojen', 'Joi'].forEach((key) => {
-        var start = Date.now();
+        const start = Date.now();
         validFns.forEach((v) => {
             for (let i = 0; i < iterations; i++) {
                 v[key]();
@@ -71,7 +76,7 @@ function runBench (iterations) {
     });
 }
 
-process.on('exit', function () {
+process.on('exit', () => {
     if (process.env.JO_BENCH) {
         runBench(2000);
     }
