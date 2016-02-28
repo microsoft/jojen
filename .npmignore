@@ -2,6 +2,7 @@ test
 .travis.yml
 .eslintrc
 .babelrc
+.editorconfig
 
 *.sublime-project
 *.sublime-workspace
