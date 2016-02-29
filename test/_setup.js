@@ -17,6 +17,20 @@ function prettyPrintSchema(schema) {
     }).join('\n');
 }
 
+function getNthCaller(n) {
+    const stack = new Error().stack.split('\n').slice(1);
+    const parts = (/[a-z\.]+\.js:[0-9]+/i).exec(stack[n])
+    return parts[0];
+}
+
+function pad(str, length, padder) {
+    while (str.length < length) {
+        str += padder || ' ';
+    }
+
+    return str;
+}
+
 const validFns = [];
 
 chai.use((_chai, utils) => {
@@ -26,8 +40,8 @@ chai.use((_chai, utils) => {
         options = options || {};
 
         const pretty = prettyPrintSchema(joValid);
-
         validFns.push({
+            caller: getNthCaller(3),
             Jojen: () => Jo.validate(value, joValid, () => {}),
             Joi: () => Joi.validate(value, joiValid, () => {}),
         });
@@ -62,22 +76,54 @@ chai.use((_chai, utils) => {
 });
 
 function runBench(iterations) {
-    console.log('Running head-to-head benchmark for Joi vs Jojen');
+    console.log(`Running ${iterations}x${validFns.length * 2} head-to-head head to head iterations against Joi`);
 
-    ['Jojen', 'Joi'].forEach((key) => {
+    const Progress = require('progress');
+    const chalk = require('chalk');
+
+    const time = (fn) => {
         const start = Date.now();
-        validFns.forEach((v) => {
-            for (let i = 0; i < iterations; i++) {
-                v[key]();
-            }
-        });
+        for (let i = 0; i < iterations; i++) {
+            fn();
+        }
+        return Date.now() - start;
+    };
 
-        console.log(key + ' completed in ' + (Date.now() - start) + 'ms');
+    const bar = new Progress('[:bar] :percent', {
+        total: validFns.length * 2,
+        width: 60,
+        incomplete: ' '
     });
+
+    const results = validFns.map((v) => {
+        const joi = time(v.Joi);
+        bar.tick();
+        const jojen = time(v.Jojen);
+        bar.tick();
+
+        return { joi, jojen, delta: joi / jojen, caller: v.caller };
+    }).sort((a, b) => b.delta - a.delta);
+
+    let sum = 0;
+    results.forEach(function (r) {
+        let str = pad(r.delta.toFixed(2) + 'x', 8);
+        if (r.delta < 1) {
+            str = chalk.red(str);
+        } else {
+            str = chalk.green(str);
+        }
+        sum += r.delta;
+
+        str += pad(`(Joi: ${r.joi}ms / Jojen: ${r.jojen}ms)`, 40);
+        str += r.caller;
+        console.log(str);
+    });
+
+    console.log(' Average => ' + (sum / results.length).toFixed(2) + 'x faster');
 }
 
 process.on('exit', () => {
     if (process.env.JO_BENCH) {
-        runBench(2000);
+        runBench(parseInt(process.env.JO_BENCH, 10) || 1000);
     }
 });
