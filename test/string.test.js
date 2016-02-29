@@ -41,6 +41,8 @@ describe('string', () => {
     it('will match against a regex', () => {
         expect(Jo => Jo.string().regex(/test/)).to.failOn('blep');
         expect(Jo => Jo.string().regex(/test/)).to.not.failOn('test');
+
+        expect(Jo => Jo.string().regex(/test/g)).to.failOn('testtest');
     });
 
     it('will validate alphanumeric', () => {
