@@ -63,7 +63,7 @@ describe('string', () => {
         expect(Jo => Jo.string().ip()).to.failOn('0.0.0.0.0');
     });
 
-    it.skip('will validate URIs', () => {
+    it('will validate URIs', () => {
         urlFixtures.forEach(pair => {
             let b = expect(Jo => Jo.string().uri(pair[2]));
             if (pair[1]) {

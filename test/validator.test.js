@@ -1,7 +1,5 @@
 import Jo from '../lib';
 
-console.log(Jo)
-
 describe('validator', () => {
     describe('assert', () => {
         it('throws jojen errors', () => {
