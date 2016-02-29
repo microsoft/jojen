@@ -91,28 +91,25 @@ function runBench(iterations) {
         const joi = time(v.Joi);
         const jojen = time(v.Jojen);
 
-        let delta;
-        if (joi > jojen) {
-            delta = -Math.round((joi / jojen - 1) * 100);
-        } else {
-            delta = Math.round((jojen / joi - 1) * 100);
-        }
+        return { joi, jojen, delta: joi / jojen, caller: v.caller };
+    }).sort((a, b) => b.delta - a.delta);
 
-        return { joi, jojen, delta, caller: v.caller };
-    }).sort((a, b) => a.delta - b.delta);
-
+    let sum = 0;
     results.forEach(function (r) {
-        let str = '';
-        if (r.delta < 0) {
-            str += chalk.green(pad(Math.round(r.delta) + '%', 8));
+        let str = pad(r.delta.toFixed(2) + 'x', 8);
+        if (r.delta < 1) {
+            str = chalk.red(str);
         } else {
-            str += chalk.red(pad('+' + Math.round(r.delta) + '%', 8));
+            str = chalk.green(str);
         }
+        sum += r.delta;
 
         str += pad(`(Joi: ${r.joi}ms / Jojen: ${r.jojen}ms)`, 40);
         str += r.caller;
         console.log(str);
     });
+
+    console.log(' Average => ' + (sum / results.length).toFixed(2) + 'x faster');
 }
 
 process.on('exit', () => {
