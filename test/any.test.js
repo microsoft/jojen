@@ -61,19 +61,7 @@ describe('any', () => {
     });
 
     it('allows allowed values', () => {
-        expect((Jo) => Jo.allow('a')).to.failOn('c');
-        expect((Jo) => Jo.allow('a')).not.to.failOn('a');
-
-        expect((Jo) => Jo.allow('a', 'b')).not.to.failOn('a');
-        expect((Jo) => Jo.allow('a', 'b')).not.to.failOn('b');
-        expect((Jo) => Jo.allow('a', 'b')).to.failOn('c');
-
-        expect((Jo) => Jo.allow(['a', 'b'])).not.to.failOn('a');
-        expect((Jo) => Jo.allow(['a', 'b'])).not.to.failOn('b');
-        expect((Jo) => Jo.allow(['a', 'b'])).to.failOn('c');
-
-        expect((Jo) => Jo.allow('a').allow('b')).to.failOn('a');
-
-        expect((Jo) => Jo.allow(1).string()).not.to.failOn(1);
+        expect((Jo) => Jo.allow('a')).to.not.failOn('c');
+        expect((Jo) => Jo.string().allow(1)).not.to.failOn(1);
     });
 });
