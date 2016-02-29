@@ -44,7 +44,7 @@ describe('any', () => {
         expect((Jo) => Jo.valid(['a', 'b'])).not.to.failOn('b');
         expect((Jo) => Jo.valid(['a', 'b'])).to.failOn('c');
 
-        expect((Jo) => Jo.valid('a').valid('b')).to.failOn('a');
+        expect((Jo) => Jo.valid('a').valid('b')).not.to.failOn('a');
     });
 
     it('disallows invalid values', () => {
