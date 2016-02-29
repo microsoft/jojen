@@ -73,5 +73,7 @@ describe('any', () => {
         expect((Jo) => Jo.allow(['a', 'b'])).to.failOn('c');
 
         expect((Jo) => Jo.allow('a').allow('b')).to.failOn('a');
+
+        expect((Jo) => Jo.allow(1).string()).not.to.failOn(1);
     });
 });
