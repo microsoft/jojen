@@ -42,7 +42,7 @@ describe('string', () => {
         expect(Jo => Jo.string().regex(/test/)).to.failOn('blep');
         expect(Jo => Jo.string().regex(/test/)).to.not.failOn('test');
 
-        expect(Jo => Jo.string().regex(/test/g)).to.failOn('testtest');
+        expect(Jo => Jo.string().regex(/test/g)).to.not.failOn('testtest');
     });
 
     it('will validate alphanumeric', () => {

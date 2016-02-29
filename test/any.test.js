@@ -15,7 +15,7 @@ describe('any', () => {
         expect((Jo) => Jo.required()).to.failOn(undefined, [
             {
                 context: { key: 'value' },
-                message: '"value" is required',
+                message: '"value" is required.',
                 path: 'value',
                 type: 'required'
             }
