@@ -78,7 +78,9 @@ chai.use((_chai, utils) => {
 function runBench(iterations) {
     console.log(`Running ${iterations}x${validFns.length * 2} head-to-head head to head iterations against Joi`);
 
+    const Progress = require('progress');
     const chalk = require('chalk');
+
     const time = (fn) => {
         const start = Date.now();
         for (let i = 0; i < iterations; i++) {
@@ -87,9 +89,17 @@ function runBench(iterations) {
         return Date.now() - start;
     };
 
+    const bar = new Progress('[:bar] :percent', {
+        total: validFns.length * 2,
+        width: 60,
+        incomplete: ' '
+    });
+
     const results = validFns.map((v) => {
         const joi = time(v.Joi);
+        bar.tick();
         const jojen = time(v.Jojen);
+        bar.tick();
 
         return { joi, jojen, delta: joi / jojen, caller: v.caller };
     }).sort((a, b) => b.delta - a.delta);
