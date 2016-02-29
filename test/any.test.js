@@ -44,7 +44,7 @@ describe('any', () => {
         expect((Jo) => Jo.valid(['a', 'b'])).not.to.failOn('b');
         expect((Jo) => Jo.valid(['a', 'b'])).to.failOn('c');
 
-        expect((Jo) => Jo.valid('a').valid('b')).not.to.failOn('a');
+        expect((Jo) => Jo.valid('a').valid('b')).to.failOn('a');
     });
 
     it('disallows invalid values', () => {
@@ -58,5 +58,20 @@ describe('any', () => {
         expect((Jo) => Jo.invalid(['a', 'b'])).to.failOn('a');
         expect((Jo) => Jo.invalid(['a', 'b'])).to.failOn('b');
         expect((Jo) => Jo.invalid(['a', 'b'])).not.to.failOn('c');
+    });
+
+    it('allows allowed values', () => {
+        expect((Jo) => Jo.allow('a')).to.failOn('c');
+        expect((Jo) => Jo.allow('a')).not.to.failOn('a');
+
+        expect((Jo) => Jo.allow('a', 'b')).not.to.failOn('a');
+        expect((Jo) => Jo.allow('a', 'b')).not.to.failOn('b');
+        expect((Jo) => Jo.allow('a', 'b')).to.failOn('c');
+
+        expect((Jo) => Jo.allow(['a', 'b'])).not.to.failOn('a');
+        expect((Jo) => Jo.allow(['a', 'b'])).not.to.failOn('b');
+        expect((Jo) => Jo.allow(['a', 'b'])).to.failOn('c');
+
+        expect((Jo) => Jo.allow('a').allow('b')).to.failOn('a');
     });
 });
