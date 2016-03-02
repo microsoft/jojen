@@ -9,6 +9,7 @@ describe('any', () => {
         expect((Jo) => Jo.optional()).not.to.failOn(undefined);
         expect((Jo) => Jo.optional()).not.to.failOn(null);
         expect((Jo) => Jo.optional()).not.to.failOn('fubar');
+        expect((Jo) => Jo.optional().valid(1)).to.not.failOn(1);
         expect((Jo) => Jo.optional().valid(1)).to.failOn(2);
     });
 
@@ -18,8 +19,8 @@ describe('any', () => {
                 context: { key: 'value' },
                 message: '"value" is required.',
                 path: 'value',
-                type: 'required'
-            }
+                type: 'required',
+            },
         ]);
 
         expect((Jo) => Jo.required()).not.to.failOn(null);
