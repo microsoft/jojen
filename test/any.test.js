@@ -9,6 +9,7 @@ describe('any', () => {
         expect((Jo) => Jo.optional()).not.to.failOn(undefined);
         expect((Jo) => Jo.optional()).not.to.failOn(null);
         expect((Jo) => Jo.optional()).not.to.failOn('fubar');
+        expect((Jo) => Jo.optional().valid(1)).to.failOn(2);
     });
 
     it('requires values correctly', () => {
