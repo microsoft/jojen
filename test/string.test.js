@@ -10,7 +10,7 @@ describe('string', () => {
     });
 
     it.skip('will validate insensitive', () => {
-        expect(Jo => Jo.string().valid('a').insensitive()).to.not.failOn('A');
+        expect(Jo => Jo.string().insensitive().valid('a')).to.not.failOn('A');
     });
 
     it('will validate min string length', () => {
