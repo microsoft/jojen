@@ -9,16 +9,18 @@ describe('any', () => {
         expect((Jo) => Jo.optional()).not.to.failOn(undefined);
         expect((Jo) => Jo.optional()).not.to.failOn(null);
         expect((Jo) => Jo.optional()).not.to.failOn('fubar');
+        expect((Jo) => Jo.optional().valid(1)).to.not.failOn(1);
+        expect((Jo) => Jo.optional().valid(1)).to.failOn(2);
     });
 
     it('requires values correctly', () => {
         expect((Jo) => Jo.required()).to.failOn(undefined, [
             {
                 context: { key: 'value' },
-                message: '"value" is required',
+                message: '"value" is required.',
                 path: 'value',
-                type: 'required'
-            }
+                type: 'required',
+            },
         ]);
 
         expect((Jo) => Jo.required()).not.to.failOn(null);
@@ -58,5 +60,10 @@ describe('any', () => {
         expect((Jo) => Jo.invalid(['a', 'b'])).to.failOn('a');
         expect((Jo) => Jo.invalid(['a', 'b'])).to.failOn('b');
         expect((Jo) => Jo.invalid(['a', 'b'])).not.to.failOn('c');
+    });
+
+    it('allows allowed values', () => {
+        expect((Jo) => Jo.allow('a')).to.not.failOn('c');
+        expect((Jo) => Jo.string().allow(1)).not.to.failOn(1);
     });
 });

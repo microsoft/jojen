@@ -4,7 +4,7 @@ describe('object', () => {
             expect((Jo) => Jo.object().keys({ a: Jo.any() })).to.failOn({ b: 42 }, [
                 {
                     context: { key: 'value' },
-                    message: '"value" should not have "b"',
+                    message: '"value" should not have "b".',
                     path: 'value',
                     type: 'object.unknown'
                 }
