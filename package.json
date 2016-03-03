@@ -2,13 +2,12 @@
   "name": "jojen",
   "version": "0.1.0",
   "description": "Expressive validator for Node and the browser, with a small footprint and awesome performance",
-  "main": "jojen.js",
+  "main": "dist/index",
   "scripts": {
-    "debug": "node debug node_modules/mocha/bin/_mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
-    "test": "node_modules/mocha/bin/_mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
-    "bundle": "node_modules/browserify/bin/cmd.js lib/index.js -t babelify --presets es2015 > jojen.js",
-    "minify": "node_modules/closurecompiler/bin/ccjs jojen.js --compilation_level=ADVANCED_OPTIMIZATIONS > jojen.min.js",
-    "prepublish": "babel lib --out-dir dist && npm run bundle && npm run minify"
+    "debug": "node debug mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
+    "test": "mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
+    "bundle": "browserify lib/index.js -t babelify --presets es2015 | ccjs --compilation_level=ADVANCED_OPTIMIZATIONS > jojen.min.js",
+    "prepublish": "babel lib --out-dir dist && (type casdcjs &> /dev/null && npm run bundle || echo 'closure compiler not installed, not bundling for browser')"
   },
   "repository": {
     "type": "git",
@@ -36,7 +35,6 @@
     "browserify": "^13.0.0",
     "chai": "^3.4.1",
     "chalk": "^1.1.1",
-    "closurecompiler": "^1.5.2",
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "joi": "^8.0.0",
