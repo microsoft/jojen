@@ -66,4 +66,9 @@ describe('any', () => {
         expect((Jo) => Jo.allow('a')).to.not.failOn('c');
         expect((Jo) => Jo.string().allow(1)).not.to.failOn(1);
     });
+
+    it('aborts further validations on unrequired values', () => {
+        expect(Jo => Jo.string().max(3)).not.to.failOn(undefined);
+        expect(Jo => Jo.string().max(3).required()).to.failOn(undefined);
+    });
 });
