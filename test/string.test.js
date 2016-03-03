@@ -9,7 +9,7 @@ describe('string', () => {
         expect(Jo => Jo.string()).to.not.failOn('a');
     });
 
-    it.skip('will validate insensitive', () => {
+    it('will validate insensitive', () => {
         expect(Jo => Jo.string().insensitive().valid('a')).to.not.failOn('A');
     });
 
