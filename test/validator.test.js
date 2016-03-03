@@ -18,4 +18,12 @@ describe('validator', () => {
             }).not.to.throw();
         });
     });
+
+    it('does not allow modifications to be run after schema optimization', () => {
+        let schema = Jo.required();
+        Jo.assert(1, schema);
+        expect(() => {
+            schema.string();
+        }).to.throw(/You cannot modify schemas after you start validating them/);
+    });
 });
