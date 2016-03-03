@@ -5,9 +5,9 @@
   "main": "jojen.js",
   "scripts": {
     "debug": "node debug node_modules/mocha/bin/_mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
-    "test": "mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
-    "bundle": "browserify lib/index.js -t babelify --presets es2015 > jojen.js",
-    "minify": "cat jojen.js | ccjs --compilation_level=ADVANCED_OPTIMIZATIONS > jojen.min.js",
+    "test": "node_modules/mocha/bin/_mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
+    "bundle": "node_modules/browserify/bin/cmd.js lib/index.js -t babelify --presets es2015 > jojen.js",
+    "minify": "node_modules/closurecompiler/bin/ccjs jojen.js --compilation_level=ADVANCED_OPTIMIZATIONS > jojen.min.js",
     "prepublish": "babel lib --out-dir dist && npm run bundle && npm run minify"
   },
   "repository": {
@@ -36,6 +36,7 @@
     "browserify": "^13.0.0",
     "chai": "^3.4.1",
     "chalk": "^1.1.1",
+    "closurecompiler": "^1.5.2",
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "joi": "^8.0.0",
