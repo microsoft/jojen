@@ -2,12 +2,13 @@
   "name": "jojen",
   "version": "0.1.0",
   "description": "Expressive validator for Node and the browser, with a small footprint and awesome performance",
-  "main": "lib/index.js",
+  "main": "jojen.js",
   "scripts": {
     "debug": "node debug node_modules/mocha/bin/_mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
     "test": "mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
-    "sizeBrowser": "browserify lib/index.js -t babelify --presets es2015 | ccjs --compilation_level=ADVANCED_OPTIMIZATIONS | gzip | wc -c",
-    "prepublish": "babel lib --out-dir dist"
+    "bundle": "browserify lib/index.js -t babelify --presets es2015 > jojen.js",
+    "minify": "cat jojen.js | ccjs --compilation_level=ADVANCED_OPTIMIZATIONS > jojen.min.js",
+    "prepublish": "babel lib --out-dir dist && npm run bundle && npm run minify"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,8 @@
     "babel-cli": "^6.4.0",
     "babel-preset-es2015": "^6.3.13",
     "babel-register": "^6.3.13",
+    "babelify": "^7.2.0",
+    "browserify": "^13.0.0",
     "chai": "^3.4.1",
     "chalk": "^1.1.1",
     "eslint": "^2.2.0",

@@ -1,4 +1,5 @@
-test
+/test
+/lib
 .travis.yml
 .eslintrc
 .babelrc
