@@ -40,11 +40,11 @@ describe('number', () => {
     });
 
     it('checks less than', () => {
-        expect(Jo => Jo.number().max(42)).to.failOn(42);
-        expect(Jo => Jo.number().max(42)).to.not.failOn(41);
-        expect(Jo => Jo.number().max(42)).to.failOn(43);
-        expect(Jo => Jo.number().max(-42)).to.failOn(-41);
-        expect(Jo => Jo.number().max(-42)).to.not.failOn(-43);
+        expect(Jo => Jo.number().less(42)).to.failOn(42);
+        expect(Jo => Jo.number().less(42)).to.not.failOn(41);
+        expect(Jo => Jo.number().less(42)).to.failOn(43);
+        expect(Jo => Jo.number().less(-42)).to.failOn(-41);
+        expect(Jo => Jo.number().less(-42)).to.not.failOn(-43);
     });
 
     it('checks positive', () => {
@@ -70,7 +70,9 @@ describe('number', () => {
         expect(Jo => Jo.number().precision(2)).to.not.failOn(42.42);
         expect(Jo => Jo.number().precision(2)).to.not.failOn(-42.42);
         expect(Jo => Jo.number().precision(2)).to.not.failOn(42);
-        expect(Jo => Jo.number().precision(2)).to.failOn(42.4242);
-        expect(Jo => Jo.number().precision(2)).to.failOn(-42.4242);
+        expect(Jo => Jo.number().precision(2)).to.failOn(
+            42.4242, undefined, false, { convert: false });
+        expect(Jo => Jo.number().precision(2)).to.failOn(
+            -42.4242, undefined, false, { convert: false });
     });
 });
