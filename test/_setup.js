@@ -2,6 +2,7 @@ const Joi = require('joi');
 const Jo = require('../lib/index');
 const chai = require('chai');
 const Assertion = chai.Assertion;
+const util = require('util');
 
 const expect = global.expect = chai.expect;
 const assert = global.assert = chai.assert;
@@ -64,7 +65,7 @@ chai.use((_chai, utils) => {
                 assert.fail(
                     err,
                     null,
-                    'Jojen failed, but Joi did not. Jojen\'s output: \n' + JSON.stringify(err, undefined, 4)
+                    'Jojen failed, but Joi did not. Jojen\'s output: \n' + util.inspect(err)
                 );
             } else if (!err && joiError) {
                 assert.fail(null, joiError, 'Joi failed, but Jojen did not. Joi\'s output: \n' + JSON.stringify(joiError, undefined, 4));
