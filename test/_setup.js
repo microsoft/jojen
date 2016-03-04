@@ -8,7 +8,7 @@ const assert = global.assert = chai.assert;
 
 
 function prettyPrintSchema(schema) {
-    return schema._rules.map((rule) => {
+    return schema.getRules().map((rule) => {
         const args = rule._params
         .map((param) => JSON.stringify(param))
         .join(', ');
