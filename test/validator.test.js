@@ -1,7 +1,7 @@
 import Jo from '../lib';
 
 describe('validator', () => {
-    describe('assert', () => {
+    describe('assert()', () => {
         it('throws jojen errors', () => {
             expect(() => {
                 Jo.assert(undefined, Jo.required());
@@ -16,6 +16,15 @@ describe('validator', () => {
             expect(() => {
                 Jo.assert(1, Jo.required());
             }).not.to.throw();
+        });
+    });
+
+    describe('validateSync()', () => {
+        it('works correctly', () => {
+            expect(Jo.validateSync(1, Jo.number())).to.eql({
+                value: 1,
+                error: null,
+            });
         });
     });
 });
