@@ -11,6 +11,8 @@ describe('string', () => {
 
     it('will validate insensitive', () => {
         expect(Jo => Jo.string().insensitive().valid('a')).to.not.failOn('A');
+        expect(Jo => Jo.string().insensitive().valid('a')).to.not.failOn('a');
+        expect(Jo => Jo.string().insensitive().valid('a')).to.failOn('b');
     });
 
     it('will validate min string length', () => {
