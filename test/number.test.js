@@ -70,9 +70,10 @@ describe('number', () => {
         expect(Jo => Jo.number().precision(2)).to.not.failOn(42.42);
         expect(Jo => Jo.number().precision(2)).to.not.failOn(-42.42);
         expect(Jo => Jo.number().precision(2)).to.not.failOn(42);
+        expect(Jo => Jo.number().precision(2)).to.failOn(42.424, { validator: { convert: false } });
         expect(Jo => Jo.number().precision(2)).to.failOn(
-            42.4242, undefined, false, { convert: false });
+            42.4242, { validator: { convert: false } });
         expect(Jo => Jo.number().precision(2)).to.failOn(
-            -42.4242, undefined, false, { convert: false });
+            -42.4242, { validator: { convert: false } });
     });
 });

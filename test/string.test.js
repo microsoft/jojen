@@ -64,7 +64,33 @@ describe('string', () => {
 
     it('will validate IPs', () => {
         expect(Jo => Jo.string().ip()).to.not.failOn('0.0.0.0');
+        expect(Jo => Jo.string().ip()).to.not.failOn('127.0.0.1');
+        expect(Jo => Jo.string().ip()).to.not.failOn('255.255.255.255');
+        expect(Jo => Jo.string().ip()).to.not.failOn('2001:cdba:0000:0000:0000:0000:3257:9652');
+        expect(Jo => Jo.string().ip()).to.not.failOn('2001:cdba:0:0:0:0:3257:9652');
+        expect(Jo => Jo.string().ip()).to.not.failOn('2001:cdba::3257:9652');
+        expect(Jo => Jo.string().ip()).to.not.failOn('f::');
+        expect(Jo => Jo.string().ip()).to.not.failOn('::');
+        expect(Jo => Jo.string().ip()).to.not.failOn('::');
+        expect(Jo => Jo.string().ip()).to.not.failOn('1234:567::aff');
+        expect(Jo => Jo.string().ip()).to.not.failOn('1234:567::AFF');
+        expect(Jo => Jo.string().ip()).to.not.failOn('::ffff:1.3.3.7');
+
+
         expect(Jo => Jo.string().ip()).to.failOn('0.0.0.0.0');
+        expect(Jo => Jo.string().ip()).to.failOn('329.389.88.582');
+        expect(Jo => Jo.string().ip()).to.failOn('76.42.947.545');
+        expect(Jo => Jo.string().ip()).to.failOn('93.66.711.346');
+        expect(Jo => Jo.string().ip()).to.failOn('29.52.742.13');
+
+        expect(Jo => Jo.string().ip()).to.failOn(':::');
+        expect(Jo => Jo.string().ip()).to.failOn('z::');
+        expect(Jo => Jo.string().ip()).to.failOn('aaaaa::');
+        expect(Jo => Jo.string().ip()).to.failOn('aaaaa;:');
+        expect(Jo => Jo.string().ip()).to.failOn('aaa::aa::a');
+        expect(Jo => Jo.string().ip()).to.failOn('a:a:a:a:a:a:a:a:a');
+        expect(Jo => Jo.string().ip()).to.failOn('a:a:a:a:a:a:a:a::');
+        expect(Jo => Jo.string().ip()).to.failOn('a:a:a:a::a:a:a:a:');
     });
 
     it('will validate URIs', () => {
@@ -90,23 +116,34 @@ describe('string', () => {
     });
 
     it('will validate hostnames', () => {
+        expect(Jo => Jo.string().hostname()).to.not.failOn('beam.pro');
+        expect(Jo => Jo.string().hostname()).to.not.failOn('developer.beam.pro');
+        expect(Jo => Jo.string().hostname()).to.not.failOn('sdouigbsdogs');
+        expect(Jo => Jo.string().hostname()).to.not.failOn('127.0.0.1');
+        expect(Jo => Jo.string().hostname()).to.not.failOn('abcd::abcd');
+
+        expect(Jo => Jo.string().hostname()).to.failOn('test|name');
+        expect(Jo => Jo.string().hostname()).to.failOn('test:name');
+        expect(Jo => Jo.string().hostname()).to.failOn('test?');
+        expect(Jo => Jo.string().hostname()).to.failOn('test(');
+        expect(Jo => Jo.string().hostname()).to.failOn('test{');
     });
 
     it('will validate lowercase', () => {
-        expect(Jo => Jo.string().lowercase()).to.failOn('AAAA', undefined, false, { convert: false });
+        expect(Jo => Jo.string().lowercase()).to.failOn('AAAA', { validator: { convert: false } });
         expect(Jo => Jo.string().lowercase()).to.not.failOn('aaaa');
         expect(Jo => Jo.string().lowercase()).to.not.failOn('AAAA');
     });
 
     it('will validate uppercase', () => {
         expect(Jo => Jo.string().uppercase()).to.not.failOn('AAAA');
-        expect(Jo => Jo.string().uppercase()).to.failOn('aaaa', undefined, false, { convert: false });
+        expect(Jo => Jo.string().uppercase()).to.failOn('aaaa', { validator: { convert: false } });
         expect(Jo => Jo.string().uppercase()).to.not.failOn('aaaa');
     });
 
     it('will validate trim', () => {
         expect(Jo => Jo.string().trim()).to.not.failOn('AAAA');
-        expect(Jo => Jo.string().trim()).to.failOn(' AAAA ', undefined, false, { convert: false });
+        expect(Jo => Jo.string().trim()).to.failOn(' AAAA ', { validator: { convert: false } });
         expect(Jo => Jo.string().trim()).to.not.failOn(' AAAA ');
     });
 
@@ -117,5 +154,13 @@ describe('string', () => {
         expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07-16T19:20+01:00');
         expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07-16T19:20:30+01:00');
         expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07-16T19:20:30.45+01:00');
+
+        expect(Jo => Jo.string().isoDate()).to.failOn('19:20:30');
+        expect(Jo => Jo.string().isoDate()).to.failOn('1997-07-16T25:20:30.45+01:00');
+        expect(Jo => Jo.string().isoDate()).to.failOn('-07-16T25:20:30.45+01:00');
+        expect(Jo => Jo.string().isoDate()).to.failOn('sjkdghsdfl');
+        expect(Jo => Jo.string().isoDate()).to.failOn('1997-07-16T25:20:30.');
+        expect(Jo => Jo.string().isoDate()).to.failOn('22 April 1996');
+        expect(Jo => Jo.string().isoDate()).to.failOn('April 22, 1996');
     });
 });

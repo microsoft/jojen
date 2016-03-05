@@ -65,6 +65,8 @@ describe('any', () => {
     it('allows allowed values', () => {
         expect((Jo) => Jo.allow('a')).to.not.failOn('c');
         expect((Jo) => Jo.string().allow(1)).not.to.failOn(1);
+        expect((Jo) => Jo.string().allow(1).allow(2)).not.to.failOn(1);
+        expect((Jo) => Jo.string().allow(1).allow(2)).not.to.failOn(2);
     });
 
     it('aborts further validations on unrequired values', () => {

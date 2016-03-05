@@ -35,7 +35,7 @@ function pad(str, length, padder) {
 const validFns = [];
 
 chai.use((_chai, utils) => {
-    Assertion.addMethod('failOn', function (value, details, ignoreCompability, options) {
+    Assertion.addMethod('failOn', function (value, options) {
         const joValid = this._obj(Jo);
         const joiValid = this._obj(Joi);
         options = options || {};
@@ -47,21 +47,21 @@ chai.use((_chai, utils) => {
             Joi: () => Joi.validate(value, joiValid, () => {}),
         });
 
-        Jo.validate(value, joValid, options, (err) => {
+        Jo.validate(value, joValid, options.validator, (err) => {
             this.assert(
                 !!err,
                 'expected to have failed: ' + pretty,
                 'expected not to have failed: ' + pretty
             );
 
-            if (details) {
-                expect(err && err.details).to.deep.equal(details);
+            if (options.details) {
+                expect(err && err.details).to.deep.equal(options.details);
             }
 
-            const joiError = Joi.validate(value, joiValid, options).error;
+            const joiError = Joi.validate(value, joiValid, options.validator).error;
 
 
-            if (err && !joiError && !ignoreCompability) {
+            if (err && !joiError && !options.ignoreCompability) {
                 assert.fail(
                     err,
                     null,
