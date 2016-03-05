@@ -36,16 +36,21 @@ const validFns = [];
 
 chai.use((_chai, utils) => {
     Assertion.addMethod('failOn', function (value, options) {
-        const joValid = this._obj(Jo);
-        const joiValid = this._obj(Joi);
         options = options || {};
+        const joValid = this._obj(Jo);
+        let joiValid;
+        if (options.joi !== false) {
+            joiValid = this._obj(Joi);
+        }
 
         const pretty = prettyPrintSchema(joValid);
-        validFns.push({
-            caller: getNthCaller(3),
-            Jojen: () => Jo.validate(value, joValid, () => {}),
-            Joi: () => Joi.validate(value, joiValid, () => {}),
-        });
+        if (options.joi !== false) {
+            validFns.push({
+                caller: getNthCaller(3),
+                Jojen: () => Jo.validate(value, joValid, () => {}),
+                Joi: () => Joi.validate(value, joiValid, () => {}),
+            });
+        }
 
         Jo.validate(value, joValid, options.validator, (err) => {
             this.assert(
@@ -58,10 +63,12 @@ chai.use((_chai, utils) => {
                 expect(err && err.details).to.deep.equal(options.details);
             }
 
-            const joiError = Joi.validate(value, joiValid, options.validator).error;
+            let joiError;
+            if (options.joi !== false) {
+                joiError = Joi.validate(value, joiValid, options.validator).error;
+            }
 
-
-            if (err && !joiError && !options.ignoreCompability) {
+            if (err && (!joiError && options.joi !== false) && !options.ignoreCompability) {
                 assert.fail(
                     err,
                     null,

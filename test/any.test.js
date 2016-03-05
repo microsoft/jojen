@@ -73,4 +73,26 @@ describe('any', () => {
         expect(Jo => Jo.string().max(3)).not.to.failOn(undefined);
         expect(Jo => Jo.string().max(3).required()).to.failOn(undefined);
     });
+
+    it('allows custom validators', () => {
+        const opts = { joi: false };
+        expect(Jo => Jo.custom((val, cb) => {
+            cb(undefined, val === 1);
+        })).to.not.failOn(1, opts);
+        expect(Jo => Jo.custom((val, cb) => {
+            setImmediate(() => cb(undefined, val === 1));
+        })).to.not.failOn(1, opts);
+        expect(Jo => Jo.custom((val, cb) => {
+            setImmediate(() => cb({
+                expected: 'whatever',
+            }));
+        })).to.failOn(0, {
+            joi: false,
+        });
+        expect(Jo => Jo.custom(() => {
+            throw new Error('BAD!');
+        })).to.failOn(0, {
+            joi: false,
+        });
+    });
 });

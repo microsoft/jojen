@@ -20,11 +20,17 @@ describe('validator', () => {
     });
 
     describe('validateSync()', () => {
-        it('works correctly', () => {
+        it('works for a sync rule', () => {
             expect(Jo.validateSync(1, Jo.number())).to.eql({
                 value: 1,
                 error: null,
             });
+        });
+
+        it('throws when a rule tries to validate async', () => {
+            expect(() =>
+                Jo.validateSync(1, Jo.custom((val, cb) => setImmediate(() => cb())))
+            ).to.throw(/Cannot validate asynchronous rules synchronously/);
         });
     });
 });
