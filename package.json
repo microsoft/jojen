@@ -7,7 +7,7 @@
     "debug": "node debug mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
     "test": "mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
     "bundle": "browserify lib/index.js -t babelify --presets es2015 | ccjs --compilation_level=ADVANCED_OPTIMIZATIONS > jojen.min.js",
-    "prepublish": "babel lib --out-dir dist && (type casdcjs &> /dev/null && npm run bundle || echo 'closure compiler not installed, not bundling for browser')"
+    "prepublish": "babel lib --out-dir dist && npm run bundle"
   },
   "repository": {
     "type": "git",
