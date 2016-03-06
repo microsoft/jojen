@@ -3,7 +3,7 @@
  - Some features on not supported (yet)
  - Errors share the same _structure_, however Joi's default errors are inconsistent so we've purposely not tried to match them exactly. Particularly, the following changes to the error `details` have been made:
     - Rules in Joi that start with `any.` do not have that prefix in Jojen. Everything follows a stricted and more consistent hierarchal tree.
-    - The path to values in Jojen _always_ start with `value` (e.g. `value.path.to.key` or simply `value`). This differs from Joi, where the output from both these validations are identical:
+    - The path to values in Jojen _never_ start with `value` (e.g. `value.path.to.key` or simply `value`). This differs from Joi, where the output from both these validations are identical:
 
     ```js
     const schema = Joi.object({ value: Joi.required() }).required();

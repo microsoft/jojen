@@ -44,6 +44,6 @@
   },
   "dependencies": {
     "deep-equal": "^1.0.1",
-    "validator": "^5.0.0"
+    "validator": "^5.1.0"
   }
 }

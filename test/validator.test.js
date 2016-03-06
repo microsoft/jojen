@@ -33,4 +33,20 @@ describe('validator', () => {
             ).to.throw(/Cannot validate asynchronous rules synchronously/);
         });
     });
+
+    describe('errors', () => {
+        it('encodes to JSON', () => {
+            const err = Jo.validateSync('foo', Jo.number()).error;
+            expect(JSON.stringify(err)).to.equal(JSON.stringify({
+                isJoi: true,
+                name: 'ValidationError',
+                details: [{
+                    path: '',
+                    type: 'number',
+                    context: {},
+                    message: '"undefined" must be a number.',
+                }],
+            }));
+        });
+    });
 });
