@@ -4,7 +4,7 @@ describe('object', () => {
             expect((Jo) => Jo.object().keys({ a: Jo.any() })).to.failOn({ b: 42 }, [
                 {
                     context: { key: 'value' },
-                    message: '"value" should not have "b"',
+                    message: '"value" should not have "b".',
                     path: 'value',
                     type: 'object.unknown'
                 }
@@ -17,6 +17,25 @@ describe('object', () => {
 
         it('runs subvalidations', () => {
             // todo after we have validators we can test this on
+        });
+
+        it('Handles overrides correctly', () => {
+            expect(Jo => Jo.object().keys({ a: Jo.any() }).keys({ b: Jo.any() })).not.to.failOn({
+                a: 42,
+                b: 42,
+            });
+
+            expect(Jo =>
+                Jo.object()
+                .keys({
+                    a: Jo.any(),
+                }).unknown()
+                .keys({
+                    b: Jo.any(),
+                })
+            ).to.not.failOn({
+                c: 42,
+            });
         });
     });
 });

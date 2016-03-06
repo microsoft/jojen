@@ -1,3 +1,9 @@
 /test
-/.travis.yml
-/.eslintrc
+/lib
+.travis.yml
+.eslintrc
+.babelrc
+.editorconfig
+
+*.sublime-project
+*.sublime-workspace

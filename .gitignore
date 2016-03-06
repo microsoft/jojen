@@ -34,4 +34,8 @@ node_modules
 npm-debug.log
 
 /dist
+/jojen.js
+/jojen.min.js
 
+*.sublime-project
+*.sublime-workspace
