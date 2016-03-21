@@ -35,7 +35,6 @@ function pad(str, length, padder) {
 const validFns = [];
 
 chai.use((_chai, utils) => {
-
     Assertion.addMethod('failOn', function (value, options) {
         options = options || {};
         const joValid = this._obj(Jo);
