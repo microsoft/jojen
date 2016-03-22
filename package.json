@@ -5,6 +5,7 @@
   "main": "dist/index",
   "scripts": {
     "debug": "node debug mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
+    "test-only": "mocha -r test/_setup.js --compilers js:babel-register",
     "test": "mocha -r test/_setup.js --compilers js:babel-register && eslint lib",
     "bundle": "browserify lib/index.js -t babelify --presets es2015 -s Jo | ccjs --compilation_level=ADVANCED_OPTIMIZATIONS > jojen.min.js",
     "prepublish": "babel lib --out-dir dist && npm run bundle"
