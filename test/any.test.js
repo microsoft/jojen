@@ -1,3 +1,5 @@
+import globalJo from '../lib';
+
 describe('any', () => {
     it('works for any values', () => {
         expect((Jo) => Jo.any()).not.to.failOn(undefined);
@@ -93,6 +95,27 @@ describe('any', () => {
             throw new Error('BAD!');
         })).to.failOn(0, {
             joi: false,
+        });
+    });
+
+    describe('default', () => {
+        it('is used in validation', () => {
+            expect(Jo => Jo.number().integer().default(1)).to.not.failOn(undefined);
+            expect(Jo => Jo.number().integer().default(1)).to.failOn('test');
+        });
+
+        it('is included in the validation result', () => {
+            const res = globalJo.assert(undefined, globalJo.default(1));
+            expect(res).to.equal(1);
+        });
+
+        it('is included in the validation result with complex type', () => {
+            const def = {
+                test: 1,
+            };
+
+            const res = globalJo.assert(undefined, globalJo.default(def));
+            expect(res).to.eql(def);
         });
     });
 });
