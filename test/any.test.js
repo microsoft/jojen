@@ -101,6 +101,7 @@ describe('any', () => {
     describe('default', () => {
         it('is used in validation', () => {
             expect(Jo => Jo.number().integer().default(1)).to.not.failOn(undefined);
+            expect(Jo => Jo.number().integer().default(0)).to.not.failOn(undefined);
             expect(Jo => Jo.number().integer().default(1)).to.failOn('test');
         });
 
