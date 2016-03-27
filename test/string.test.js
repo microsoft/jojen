@@ -5,7 +5,9 @@ describe('string', () => {
         expect(Jo => Jo.string()).to.failOn(1);
         expect(Jo => Jo.string()).to.failOn(null);
         expect(Jo => Jo.string()).to.failOn(false);
-        expect(Jo => Jo.string()).to.failOn('');
+        expect(Jo => Jo.string()).to.not.failOn('', {
+            ignoreCompability: true,
+        });
         expect(Jo => Jo.string()).to.not.failOn('a');
     });
 
@@ -25,7 +27,9 @@ describe('string', () => {
 
     it('will validate max string length', () => {
         // TODO: Encoding
-        expect(Jo => Jo.string().max(3)).to.failOn('');
+        expect(Jo => Jo.string().max(3)).to.not.failOn('', {
+            ignoreCompability: true,
+        });
         expect(Jo => Jo.string().max(3)).to.not.failOn('aaa');
         expect(Jo => Jo.string().max(3)).to.failOn('aaaa');
     });
