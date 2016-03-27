@@ -67,8 +67,10 @@ chai.use((_chai, utils) => {
             if (options.joi !== false) {
                 joiError = Joi.validate(value, joiValid, options.validator).error;
             }
-
-            if (err && (!joiError && options.joi !== false) && !options.ignoreCompability) {
+            if (options.ignoreCompability) {
+                return;
+            }
+            if (err && (!joiError && options.joi !== false)) {
                 assert.fail(
                     err,
                     null,
