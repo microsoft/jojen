@@ -15,3 +15,4 @@
     ```
 
     - The `type` (rule that failed) is always equal to the rule name that was called in the construction of the validator. This differs from the undocumented behaviour in Joi where, for example, failures on the `any.forbidden` would appear as failures of `any.unknown` and failures on the `any.valid` rule would appear as failures in `any.allowOnly`.
+- Unlike joi, `Jo.string()` allows empty strings, if you want to make sure empty strings are not allowed you can either use `.min(1)` or `.deny('')` instead.
