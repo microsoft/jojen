@@ -37,5 +37,21 @@ describe('object', () => {
                 c: 42,
             });
         });
+
+        it('Does not share overrides', () => {
+            expect(Jo => {
+                const base = Jo.object().keys({ b: Jo.any().optional() });
+                const a = base.keys({ a: Jo.number().max(4) });
+                const b = base.keys({ a: Jo.number().max(3) });
+                a.getRules();
+                b.getRules();
+                return a;
+            })
+            .not.to.failOn({
+                a: 4,
+            }, {
+                joi: false,
+            });
+        });
     });
 });
