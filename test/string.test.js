@@ -64,6 +64,7 @@ describe('string', () => {
     it('will validate emails', () => {
         expect(Jo => Jo.string().email()).to.not.failOn('something@something.com');
         expect(Jo => Jo.string().email()).to.failOn('something@@something.com');
+        expect(Jo => Jo.string().email()).to.not.failOn('stuff@stream.kitchen');
     });
 
     it('will validate IPs', () => {
