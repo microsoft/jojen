@@ -40,12 +40,12 @@
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^8.0.0",
     "eslint-plugin-import": "^1.6.1",
-    "joi": "^8.0.0",
     "mocha": "^2.3.4",
     "progress": "^1.1.8"
   },
   "dependencies": {
     "deep-equal": "^1.0.1",
+    "joi": "^9.0.1",
     "validator": "^5.1.0"
   }
 }

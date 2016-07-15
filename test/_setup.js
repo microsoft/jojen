@@ -1,3 +1,5 @@
+'use strict';
+
 const Joi = require('joi');
 const Jo = require('../lib/index');
 const chai = require('chai');
