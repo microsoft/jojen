@@ -1,0 +1,222 @@
+[connor@raccoons jojen]$ cat /proc/cpuinfo
+processor   : 0
+vendor_id   : GenuineIntel
+cpu family  : 6
+model       : 26
+model name  : Intel Core i7 9xx (Nehalem Class Core i7)
+stepping    : 3
+microcode   : 0x1
+cpu MHz     : 2299.996
+cache size  : 4096 KB
+physical id : 0
+siblings    : 1
+core id     : 0
+cpu cores   : 1
+apicid      : 0
+initial apicid  : 0
+fpu     : yes
+fpu_exception   : yes
+cpuid level : 4
+wp      : yes
+flags       : fpu de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx lm constant_tsc rep_good nopl pni ssse3 cx16 sse4_1 sse4_2 x2apic popcnt hypervisor lahf_lm
+bogomips    : 4599.99
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 46 bits physical, 48 bits virtual
+power management:
+
+[connor@raccoons jojen]$ node --version
+v4.4.7
+[connor@raccoons jojen]$ JO_BENCH=10000 npm test
+
+> jojen@1.2.4 test /home/connor/jojen
+> mocha -r test/_setup.js --compilers js:babel-register && eslint lib
+
+
+
+  alternatives
+    ✓ Validates with an array
+    ✓ .try injects additional
+
+  any
+    ✓ works for any values
+    ✓ takes optional values
+    ✓ requires values correctly
+    ✓ disallows forbidden values
+    ✓ allows valid values
+    ✓ disallows invalid values
+    ✓ allows allowed values
+    ✓ aborts further validations on unrequired values
+    ✓ allows custom validators
+    default
+      ✓ is used in validation
+      ✓ is included in the validation result
+      ✓ is included in the validation result with complex type
+
+  array
+    ✓ invalidates items that are not arrays
+    ✓ allows sparse arrays only when specified
+    ✓ wraps single elements only when specified
+    ✓ applies schemas to array items
+    ✓ requires ordered values
+    ✓ enforces min, max, and length
+    ✓ checks unique items
+
+  boolean
+    ✓ will only validate booleans
+
+  function
+    ✓ will only validate functions
+    ✓ checks arity
+    ✓ checks min arity
+    ✓ checks max arity
+
+  number
+    ✓ will only validate valid numbers
+    ✓ only allows integers
+    ✓ checks min value
+    ✓ checks max value
+    ✓ checks greater than
+    ✓ checks less than
+    ✓ checks positive
+    ✓ checks negative
+    ✓ checks multiple of
+    ✓ checks max precision
+
+  object
+    keys
+      ✓ restricts unknown
+      ✓ allows unknown when flagged
+      ✓ runs subvalidations
+      ✓ Handles overrides correctly
+      ✓ Does not share overrides
+
+  string
+    ✓ will only validate strings
+    ✓ will validate insensitive
+    ✓ will validate min string length
+    ✓ will validate max string length
+    ✓ will validate string length
+    ✓ will validate a credit card
+    ✓ will match against a regex
+    ✓ will validate alphanumeric
+    ✓ will validate tokens
+    ✓ will validate emails
+    ✓ will validate IPs
+    ✓ will validate URIs
+    ✓ will validate GUIDs
+    ✓ will validate HEX
+    ✓ will validate hostnames
+    ✓ will validate lowercase
+    ✓ will validate uppercase
+    ✓ will validate trim
+    ✓ will validate iso dates
+
+  validator
+    assert()
+      ✓ throws jojen errors
+      ✓ throws error with prefix
+      ✓ throws does not throw on validation
+    validateSync()
+      ✓ works for a sync rule
+      ✓ throws when a rule tries to validate async
+    errors
+      ✓ encodes to JSON
+
+
+  66 passing (393ms)
+
+Running 10000x470 head-to-head head to head iterations against Joi
+[============================================================] 100%
+111.71x (Joi: 782ms / Jojen: 7ms)               any.test.js:104
+98.63x  (Joi: 789ms / Jojen: 8ms)               any.test.js:103
+63.31x  (Joi: 823ms / Jojen: 13ms)              function.test.js:8
+63.08x  (Joi: 757ms / Jojen: 12ms)              any.test.js:34
+59.77x  (Joi: 777ms / Jojen: 13ms)              boolean.test.js:8
+47.76x  (Joi: 812ms / Jojen: 17ms)              function.test.js:6
+45.28x  (Joi: 815ms / Jojen: 18ms)              function.test.js:5
+43.88x  (Joi: 746ms / Jojen: 17ms)              any.test.js:29
+43.42x  (Joi: 825ms / Jojen: 19ms)              function.test.js:19
+43.32x  (Joi: 823ms / Jojen: 19ms)              function.test.js:25
+42.68x  (Joi: 811ms / Jojen: 19ms)              function.test.js:14
+42.53x  (Joi: 808ms / Jojen: 19ms)              function.test.js:7
+41.08x  (Joi: 1602ms / Jojen: 39ms)             function.test.js:3
+40.60x  (Joi: 812ms / Jojen: 20ms)              number.test.js:6
+40.58x  (Joi: 771ms / Jojen: 19ms)              boolean.test.js:7
+36.83x  (Joi: 847ms / Jojen: 23ms)              function.test.js:13
+35.89x  (Joi: 1292ms / Jojen: 36ms)             number.test.js:5
+35.45x  (Joi: 780ms / Jojen: 22ms)              number.test.js:28
+33.92x  (Joi: 814ms / Jojen: 24ms)              array.test.js:27
+33.00x  (Joi: 759ms / Jojen: 23ms)              string.test.js:150
+32.88x  (Joi: 822ms / Jojen: 25ms)              function.test.js:24
+32.65x  (Joi: 751ms / Jojen: 23ms)              string.test.js:113
+32.10x  (Joi: 1316ms / Jojen: 41ms)             number.test.js:3
+31.88x  (Joi: 1307ms / Jojen: 41ms)             function.test.js:4
+31.72x  (Joi: 1364ms / Jojen: 43ms)             number.test.js:4
+31.58x  (Joi: 821ms / Jojen: 26ms)              function.test.js:20
+30.38x  (Joi: 1276ms / Jojen: 42ms)             string.test.js:8
+29.65x  (Joi: 1275ms / Jojen: 43ms)             string.test.js:115
+28.82x  (Joi: 1268ms / Jojen: 44ms)             string.test.js:114
+27.89x  (Joi: 781ms / Jojen: 28ms)              string.test.js:156
+27.79x  (Joi: 806ms / Jojen: 29ms)              string.test.js:15
+27.52x  (Joi: 1431ms / Jojen: 52ms)             number.test.js:58
+27.38x  (Joi: 794ms / Jojen: 29ms)              any.test.js:71
+27.29x  (Joi: 1310ms / Jojen: 48ms)             string.test.js:163
+27.28x  (Joi: 791ms / Jojen: 29ms)              any.test.js:70
+27.07x  (Joi: 785ms / Jojen: 29ms)              number.test.js:27
+26.76x  (Joi: 1311ms / Jojen: 49ms)             string.test.js:165
+26.43x  (Joi: 1295ms / Jojen: 49ms)             string.test.js:30
+26.31x  (Joi: 1342ms / Jojen: 51ms)             function.test.js:26
+25.90x  (Joi: 751ms / Jojen: 29ms)              string.test.js:144
+25.71x  (Joi: 797ms / Jojen: 31ms)              string.test.js:16
+25.61x  (Joi: 1562ms / Jojen: 61ms)             array.test.js:20
+25.36x  (Joi: 1344ms / Jojen: 53ms)             function.test.js:18
+25.06x  (Joi: 777ms / Jojen: 31ms)              string.test.js:161
+25.02x  (Joi: 1326ms / Jojen: 53ms)             string.test.js:164
+24.93x  (Joi: 997ms / Jojen: 40ms)              any.test.js:51
+24.92x  (Joi: 922ms / Jojen: 37ms)              any.test.js:7
+24.84x  (Joi: 1565ms / Jojen: 63ms)             array.test.js:19
+24.81x  (Joi: 769ms / Jojen: 31ms)              string.test.js:158
+24.52x  (Joi: 760ms / Jojen: 31ms)              string.test.js:157
+24.15x  (Joi: 797ms / Jojen: 33ms)              any.test.js:69
+23.90x  (Joi: 1243ms / Jojen: 52ms)             array.test.js:42
+23.84x  (Joi: 1216ms / Jojen: 51ms)             number.test.js:13
+23.51x  (Joi: 1199ms / Jojen: 51ms)             string.test.js:49
+23.31x  (Joi: 1352ms / Jojen: 58ms)             function.test.js:12
+23.13x  (Joi: 1642ms / Jojen: 71ms)             array.test.js:4
+22.88x  (Joi: 1144ms / Jojen: 50ms)             number.test.js:63
+22.79x  (Joi: 775ms / Jojen: 34ms)              any.test.js:75
+22.58x  (Joi: 1355ms / Jojen: 60ms)             string.test.js:17
+22.24x  (Joi: 756ms / Jojen: 34ms)              string.test.js:112
+22.14x  (Joi: 775ms / Jojen: 35ms)              string.test.js:160
+20.97x  (Joi: 776ms / Jojen: 37ms)              any.test.js:13
+20.93x  (Joi: 1465ms / Jojen: 70ms)             string.test.js:5
+20.91x  (Joi: 1715ms / Jojen: 82ms)             string.test.js:166
+20.51x  (Joi: 759ms / Jojen: 37ms)              any.test.js:28
+20.43x  (Joi: 756ms / Jojen: 37ms)              any.test.js:47
+20.34x  (Joi: 773ms / Jojen: 38ms)              any.test.js:6
+20.32x  (Joi: 772ms / Jojen: 38ms)              boolean.test.js:5
+20.03x  (Joi: 781ms / Jojen: 39ms)              string.test.js:159
+19.95x  (Joi: 778ms / Jojen: 39ms)              boolean.test.js:6
+19.77x  (Joi: 1443ms / Jojen: 73ms)             number.test.js:59
+19.76x  (Joi: 1344ms / Jojen: 68ms)             any.test.js:105
+19.71x  (Joi: 808ms / Jojen: 41ms)              string.test.js:11
+19.70x  (Joi: 1261ms / Jojen: 64ms)             any.test.js:36
+19.64x  (Joi: 766ms / Jojen: 39ms)              boolean.test.js:4
+19.54x  (Joi: 762ms / Jojen: 39ms)              any.test.js:11
+19.46x  (Joi: 1323ms / Jojen: 68ms)             string.test.js:7
+19.44x  (Joi: 1322ms / Jojen: 68ms)             string.test.js:6
+19.40x  (Joi: 1358ms / Jojen: 70ms)             array.test.js:3
+19.30x  (Joi: 772ms / Jojen: 40ms)              any.test.js:12
+19.23x  (Joi: 769ms / Jojen: 40ms)              any.test.js:5
+19.19x  (Joi: 825ms / Jojen: 43ms)              array.test.js:5
+18.96x  (Joi: 1365ms / Jojen: 72ms)             array.test.js:13
+18.69x  (Joi: 785ms / Jojen: 42ms)              array.test.js:15
+18.64x  (Joi: 1678ms / Jojen: 90ms)             array.test.js:33
+18.55x  (Joi: 1243ms / Jojen: 67ms)             any.test.js:58
+18.54x  (Joi: 760ms / Jojen: 41ms)              any.test.js:48
+18.44x  (Joi: 1254ms / Jojen: 68ms)             any.test.js:45
+18.44x  (Joi: 756ms / Jojen: 41ms)              any.test.js:68
+18.41x  (Joi: 755ms / Jojen: 41ms)              any.test.js:44
+18.29x  (Joi: 1280ms / Jojen: 70ms)             any.test.js:35
+18.22x  (Joi: 1385ms / Jojen: 76ms)             array.test.js:14
