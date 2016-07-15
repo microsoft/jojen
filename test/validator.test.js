@@ -48,5 +48,10 @@ describe('validator', () => {
                 }],
             }));
         });
+
+        it('captures stacktraces on request', () => {
+            const err = Jo.validateSync('foo', Jo.number(), { captureStack: true }).error;
+            expect(err.stack).to.contain('validator.test.js');
+        });
     });
 });
