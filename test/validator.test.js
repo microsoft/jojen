@@ -54,4 +54,21 @@ describe('validator', () => {
             expect(err.stack).to.contain('validator.test.js');
         });
     });
+
+    describe('convert', () => {
+        it('works by default', (done) => {
+            Jo.validate('42', Jo.number(), (err, value) => {
+                expect(err).to.be.null;
+                expect(value).to.equal(42);
+                done();
+            });
+        });
+
+        it('does not convert when off', (done) => {
+            Jo.validate('42', Jo.number(), { convert: false }, (err, value) => {
+                expect(err).to.not.be.null;
+                done();
+            });
+        });
+    });
 });
