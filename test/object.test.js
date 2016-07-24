@@ -1,3 +1,5 @@
+import Jo from '../lib';
+
 describe('object', () => {
     describe('keys', () => {
         it('restricts unknown', () => {
@@ -36,6 +38,17 @@ describe('object', () => {
             ).to.not.failOn({
                 c: 42,
             });
+        });
+
+        it('converts nested parameters', () => {
+            Jo.validate(
+                { a: '42' },
+                Jo.object().keys({ a: Jo.number() }),
+                (err, value) => {
+                    expect(err).to.be.null;
+                    expect(value).to.deep.equal({ a: 42 });
+                }
+            );
         });
 
         it('Does not share overrides', () => {
