@@ -51,6 +51,17 @@ describe('object', () => {
             );
         });
 
+        it('does not add parameters which are optional', () => {
+            Jo.validate(
+                {},
+                Jo.object().keys({ a: Jo.number() }),
+                (err, value) => {
+                    expect(err).to.be.null;
+                    expect(value).to.not.have.keys('a');
+                }
+            );
+        });
+
         it('Does not share overrides', () => {
             expect(Jo => {
                 const base = Jo.object().keys({ b: Jo.any().optional() });
