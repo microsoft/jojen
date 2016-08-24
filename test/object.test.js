@@ -1,6 +1,13 @@
 import Jo from '../lib';
 
 describe('object', () => {
+    it('validates types', () => {
+        expect(Jo => Jo.object()).not.to.failOn({});
+        expect(Jo => Jo.object()).to.failOn(null);
+        expect(Jo => Jo.object()).to.failOn(42);
+        expect(Jo => Jo.object()).to.failOn('nope');
+    });
+
     describe('keys', () => {
         it('restricts unknown', () => {
             expect((Jo) => Jo.object().keys({ a: Jo.any() })).to.failOn({ b: 42 }, [
