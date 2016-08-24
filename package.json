@@ -1,6 +1,6 @@
 {
   "name": "jojen",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Expressive validator for Node and the browser, with a small footprint and awesome performance",
   "main": "dist/index",
   "scripts": {
