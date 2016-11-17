@@ -1,10 +1,10 @@
-import Rule from './rule';
+import { Rule } from './rule';
 
 /**
  * The CompiledRule uses a precompiled function (built on the .compile()
  * call) to run against the input.
  */
-export default class CompiledRule extends Rule {
+export abstract class CompiledRule extends Rule {
 
     public validate: (params, callback) => void;
 

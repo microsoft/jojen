@@ -1,6 +1,6 @@
 import Ruleset from './ruleset';
-import Schema from './schema';
-import Rule from './types/rule';
+import { Schema } from './schema';
+import { Rule } from './types/rule';
 
 import Any from './rules/any';
 
@@ -37,18 +37,20 @@ export default class Validator {
      * @param {Rule|[]Rule} rules
      * @return Validator
      */
-    public add(rules: Rule|Rule[]) {
+    public add(rules: Rule|Rule[]): this {
         if (!Array.isArray(rules)) {
             this.add([rules]);
+            return this;
         }
 
         rules.forEach((rule) => {
-            this._ruleset.addRule(rule.ruleName().split('.'), rule);
+            this.ruleset.addRule(rule.ruleName().split('.'), rule);
         });
 
-        this._schema = new Schema(this._ruleset).optional();
-        this._ruleset.buildChain(this, (method, child, args) =>
-            this._schema[method].apply(this._schema, args));
+        this.schema = new Schema(this.ruleset).optional();
+        this.ruleset.buildChain(this, (method, child, ...args) =>
+            this.schema[method](...args)
+        );
 
         return this;
     }
@@ -66,9 +68,9 @@ export default class Validator {
      */
     public load(language) {
         if (typeof language === 'string') {
-            this._lang = require(`./lang/${language}`);
+            this.lang = require(`./lang/${language}`);
         } else {
-            this._lang = language;
+            this.lang = language;
         }
 
         return this;
@@ -76,14 +78,6 @@ export default class Validator {
 
     /**
      * Validates the give value against the schema.
-     * @param  {*}        value
-     * @param  {Schema}   schema
-     * @param  {Object}  [options]
-     * @param  {Boolean} [options.convert=true] Whether to attempt to coerce
-     *     values to ones which pass validation.
-     * @param  {Boolean} [options.captureStack=false] Whether to add
-     *     stacktraces to validation errors.
-     * @param  {Function} callback
      */
     public validate(value: any, schema: Schema, options: IValidationOptions, callback: (err: Error, val?: any) => void) {
         if (typeof options === 'function') {
@@ -93,9 +87,12 @@ export default class Validator {
             options = assign({}, defaultOptions, options);
         }
 
-        const run = (v, rules, triedToConvert = false) => {
+        const run = (v: any, rules: Rule[], triedToConvert = false) => {
             const rule = rules[0];
-            if (!rule) return callback(null, v);
+            if (!rule) {
+                callback(null, v);
+                return;
+            }
 
             return rule.validate(
                 {
@@ -109,7 +106,8 @@ export default class Validator {
                         if (options.convert && !triedToConvert) {
                             const converted = rule.coerce(v);
                             if (converted !== undefined) {
-                                return run(converted, rules, true);
+                                run(converted, rules, true);
+                                return;
                             }
                         }
 
@@ -117,15 +115,17 @@ export default class Validator {
                             err.addStackTrace();
                         }
 
-                        err.attach(this._lang);
-                        return callback(err, v);
+                        err.attach(this.lang);
+                        callback(err, v);
+                        return;
                     }
 
                     if (res && res.abort) {
-                        return callback(null, v);
+                        callback(null, v);
+                        return;
                     }
 
-                    return run(v, rules.slice(1));
+                    run(v, rules.slice(1));
                 }
             );
         };
@@ -146,9 +146,6 @@ export default class Validator {
 
     /**
      * Validates the give value against the schema synchronously.
-     * @param  {*}        value
-     * @param  {Schema}   schema
-     * @param  {Object}   [options]
      * @return {{value: *, error: !ValidationError}}
      */
     public validateSync(value: any, schema: Schema, options?: IValidationOptions) {
@@ -172,13 +169,8 @@ export default class Validator {
 
     /**
      * Validates the give value against the schema.
-     * @param  {*}        value
-     * @param  {Schema}   schema
-     * @param  {String|Error} message Prefixes the original message.
-     * Or replaces it if an error object.
-     * @return {*} The validated after it passed validation.
      */
-    public assert(value: any, schema: Schema, message: string | Error) {
+    public assert(value: any, schema: Schema, message: string | Error): any {
         const ret = this.validateSync(value, schema);
         const error = ret.error;
         if (!error) {

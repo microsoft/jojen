@@ -1,7 +1,7 @@
-import Rule from '../types/rule';
+import { Rule } from '../types/rule';
 
 import { async, clone } from '../util';
-import eq from 'deep-equal';
+import * as deepEqual from 'deep-equal';
 
 
 class ArrayValidator extends Rule {
@@ -11,7 +11,7 @@ class ArrayValidator extends Rule {
         this._allowSparse = false;
     }
 
-    coerce(value) {
+    public coerce(value: any) {
         if (this._allowSingle && !Array.isArray(value)) {
             return [value];
         }
@@ -19,7 +19,7 @@ class ArrayValidator extends Rule {
         return undefined;
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         if (!Array.isArray(params.value)) {
             return callback(this.error(params));
         }
@@ -35,47 +35,47 @@ class ArrayValidator extends Rule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array';
     }
 }
 
 class Sparse extends Rule {
-    compile(params) {
+    public compile(params) {
         const allow = params.args[0] === undefined ? true : params.args[0];
         params.invokeLast(ArrayValidator, (r) => { r._allowSparse = allow; });
     }
 
-    operates() {
+    public operates() {
         return false;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.sparse';
     }
 }
 
 class Single extends Rule {
-    compile(params) {
+    public compile(params) {
         const allow = params.args[0] === undefined ? true : params.args[0];
         params.invokeLast(ArrayValidator, (r) => { r._allowSingle = allow; });
     }
 
-    operates() {
+    public operates() {
         return false;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.single';
     }
 }
 
 class Items extends Rule {
-    compile(params) {
+    public compile(params) {
         this._schema = params.args[0];
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         const todo = params.value.map((item, index) => {
             const options = clone(params.options);
             options._path = options._path.concat(`[${index}]`);
@@ -86,17 +86,17 @@ class Items extends Rule {
         async.all(todo, callback);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.items';
     }
 }
 
 class Ordered extends Rule {
-    compile(params) {
+    public compile(params) {
         this._schemas = params.args;
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         const length = this._schemas.length;
         const expected = params.value.length;
         if (length !== expected) {
@@ -113,17 +113,17 @@ class Ordered extends Rule {
         return async.all(todo, callback);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.ordered';
     }
 }
 
 class Min extends Rule {
-    compile(params) {
+    public compile(params) {
         this._val = params.args[0];
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         const length = params.value.length;
         const min = this._val;
         if (length < min) {
@@ -133,17 +133,17 @@ class Min extends Rule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.min';
     }
 }
 
 class Max extends Rule {
-    compile(params) {
+    public compile(params) {
         this._val = params.args[0];
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         const length = params.value.length;
         const max = this._val;
         if (length > max) {
@@ -153,17 +153,17 @@ class Max extends Rule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.max';
     }
 }
 
 class Length extends Rule {
-    compile(params) {
+    public compile(params) {
         this._val = params.args[0];
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         const length = params.value.length;
         const expected = this._val;
         if (length !== expected) {
@@ -173,18 +173,18 @@ class Length extends Rule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.length';
     }
 }
 
 class Unique extends Rule {
-    validate(params, callback) {
+    public validate(params, callback) {
         const v = params.value;
         const l = v.length;
         for (let i = 0; i < l; i++) {
             for (let k = i + 1; k < l; k++) {
-                if (eq(v[i], v[k])) {
+                if (deepEqual(v[i], v[k])) {
                     return callback(this.error(params, {
                         violator: {
                             index: k,
@@ -198,7 +198,7 @@ class Unique extends Rule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'array.unique';
     }
 }

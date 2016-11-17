@@ -66,8 +66,8 @@ export const async = {
 /**
  * Similar to Object.assign, but stricter and about 4x faster.
  */
-export function assign<T>(target: T): T {
-    for (let i = 1; i < arguments.length; i++) {
+export function assign<T>(target: T, ...args: T[]): T {
+    for (let i = 0; i < args.length; i++) {
         const arg = arguments[i];
         if (!arg) {
             continue;
@@ -99,7 +99,7 @@ export function pick<T>(obj: T, attrs: string[]): T {
  * @return {Object}
  */
 export function clone<T>(obj: T): T {
-    return assign({}, obj);
+    return assign(<T>{}, obj);
 }
 
 /**

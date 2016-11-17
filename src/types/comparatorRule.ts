@@ -1,22 +1,21 @@
-import Rule from './rule';
+import { Rule } from './rule';
 
 /**
  * The ComparatorRule is a type of rule whose main function is comparing
  * two values. It has a comparator function (by default strict equality)
  * which can be overridden.
  */
-export default class ComparatorRule extends Rule {
+export abstract class ComparatorRule extends Rule {
+    private cmps: ((a: any, b: any) => boolean)[] = [(a, b) => a === b];
     constructor() {
         super();
-        this._cmps = [(a, b) => a === b];
     }
 
     /**
      * Adds a comparator function to use for comparing the two values.
-     * @param {Function} fn
      */
-    addComparator(fn) {
-        this._cmps.push(fn);
+    public addComparator(fn: ((a: any, b: any) => boolean)) {
+        this.cmps.push(fn);
     }
 
     /**
@@ -24,13 +23,11 @@ export default class ComparatorRule extends Rule {
      * through all comparators we have and returns true if ANY of them
      * return true.
      *
-     * @param  {*} a
-     * @param  {*} b
      * @return {Boolean}
      */
-    compare(a, b) {
-        for (let i = 0; i < this._cmps.length; i++) {
-            if (this._cmps[i](a, b)) {
+    public compare(a: any, b: any) {
+        for (let i = 0; i < this.cmps.length; i++) {
+            if (this.cmps[i](a, b)) {
                 return true;
             }
         }

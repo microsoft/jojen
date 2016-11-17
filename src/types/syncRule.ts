@@ -1,9 +1,9 @@
-import Rule from './rule';
+import { Rule } from './rule';
 
 /**
  * Helper rule that handles callback calling for synchronous validation rules.
  */
-export default abstract class SyncRule extends Rule {
+export abstract class SyncRule extends Rule {
 
     public validate(params, callback) {
         const res = this.validateSync(params);
@@ -20,5 +20,5 @@ export default abstract class SyncRule extends Rule {
      * Validates synchronously.
      * If boolean, true = success, false = error.
      */
-    public abstract validateSync(): boolean | Object;
+    public abstract validateSync(params): boolean | Object;
 }

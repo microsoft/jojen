@@ -1,3 +1,4 @@
+import { Rule } from './types/rule';
 import { assign, pick } from './util';
 
 /**
@@ -9,10 +10,10 @@ import { assign, pick } from './util';
  * @param {*} info - optional additional info returned from the validation rule
  */
 
-export default class ValidationError extends Error {
+export class ValidationError extends Error {
     public readonly isJoi: boolean = true; // shh! They'll never find us!
     public readonly name = 'ValidationError';
-    constructor (rule, params, info) {
+    constructor (rule: Rule, params, info) {
         super();
         const opts = assign({}, params, {
             rule: rule.name(),

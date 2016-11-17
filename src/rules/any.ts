@@ -1,5 +1,5 @@
-import Rule from '../types/rule';
-import ComparatorRule from '../types/comparatorRule';
+import { Rule } from '../types/rule';
+import { ComparatorRule } from '../types/comparatorRule';
 import priority from '../priority';
 
 import { RuleParams } from '../RuleParams';

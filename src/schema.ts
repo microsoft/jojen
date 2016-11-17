@@ -1,5 +1,10 @@
-import Rule from './types/rule';
+import { Rule } from './types/rule';
 import RuleSet from './ruleset';
+import { RuleParams } from './RuleParams';
+
+interface IRuleCtor<T extends Rule> {
+    new (value?: any) : T;
+}
 
 /**
  * The Schema is an immutable object used for building definitions
@@ -10,14 +15,12 @@ import RuleSet from './ruleset';
  */
 export class Schema {
     private compiled: boolean = false;
+    private rules: Rule[] = null;
 
-    constructor(ruleset: RuleSet, generators = []) {
-        this._generators = generators;
-        this._rules = null; // filled on compile
-
+    constructor (ruleset: RuleSet, private generators: ((list: Rule[]) => Rule[])[] = []) {
         ruleset.buildChain(this, (method, child, args) => {
             const Node = child.node();
-            const newGens = generators.concat([(list) => this._build(Node, args, list)]);
+            const newGens = generators.concat([(list) => this.build(Node, args, list)]);
             return new Schema(child, newGens);
         });
     }
@@ -32,13 +35,15 @@ export class Schema {
      * @param  {[]Rule} rules
      * @return {[]Rule}
      */
-    private _build(Node, args, list) {
-        if (Node === null) return list;
+    private build(ctor: IRuleCtor<Rule>, args: any[], list: Rule[]): Rule[] {
+        if (ctor === null) {
+            return list;
+        }
 
-        const node = new Node();
-        node._setParams.apply(node, args);
+        const rule = new ctor();
+        rule._setParams(...args);
 
-        return list.concat(node);
+        return list.concat(rule);
     }
 
     /**
@@ -46,7 +51,7 @@ export class Schema {
      * the rule set and removes rules that don't operate.
      * @return {[]Rule}
      */
-    private _compile() {
+    private compile(): Rule[] {
         // Stable sort the rules so that higher-priority rules come first.
         // We implement this as a stable sort by comparing equal-priority
         // rules by their position.
@@ -85,12 +90,12 @@ export class Schema {
      * Gets a list of rules for this schema.
      * @return {Schema}
      */
-    public getRules() {
+    public getRules(): Rule[] {
         if (!this.compiled) {
-            this._rules = this._compile();
+            this.rules = this.compile();
             this.compiled = true;
         }
 
-        return this._rules;
+        return this.rules;
     }
 }

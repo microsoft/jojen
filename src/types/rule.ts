@@ -1,11 +1,13 @@
 import { ValidationError } from '../errors';
 import priority from '../priority';
+import { RuleParams } from '../RuleParams';
 import * as deepEqual from 'deep-equal';
 
 /**
  * Base rule class that all validation functions must implement.
  */
-export default abstract class Rule {
+export abstract class Rule {
+    private params: any[];
 
     /**
      * Called when the rule is created, with arguments passed in. For
@@ -14,14 +16,14 @@ export default abstract class Rule {
      *
      * @param {RuleParams} options
      */
-    public compile() {
+    public compile(params: RuleParams) {
         return;
     }
 
     /**
      * Sets the rule parameters for equality checking later.
      */
-    private setParams(...args) {
+    private setParams(...args: any[]) {
         this.params = args;
     }
 
@@ -42,7 +44,7 @@ export default abstract class Rule {
      * @param  {Function} callback Should be called with a
      *                             ValidationError, or nothing.
      */
-    public abstract validate(): void;
+    public abstract validate(params: Object, cb: (err: ValidationError, value?: any) => void): void;
 
     /**
      * Attempts to coerce the value to the match this rule. This will only

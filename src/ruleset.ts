@@ -1,4 +1,6 @@
+import { Schema } from './Schema';
 import Rule from './types/rule';
+import Validator from './validator';
 
 /**
  * The Ruleset is an object used for collecting and building sets of validation
@@ -65,17 +67,16 @@ export default class Ruleset {
      *                       be the returned value from the built function.
      * @return {Object}
      */
-    public buildChain(obj, fn) {
+    public buildChain (obj: Validator | Schema, fn: (key: string, child: Rule, ...args: any[]) => Schema) {
         if (this.parent) {
             this.parent.buildChain(obj, fn);
         }
 
-        Object.keys(this._children).forEach((key) => {
+        Object.keys(this.children).forEach((key) => {
             const child = this.children[key];
             const handler = function (...args) {
                 return fn.call(this, key, child, args);
             };
-            handler._rulesetChainedFn = true;
 
             obj[key] = handler; //eslint-disable-line
         });
