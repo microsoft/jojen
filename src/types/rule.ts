@@ -1,11 +1,11 @@
 import { ValidationError } from '../errors';
 import priority from '../priority';
-import eq from 'deep-equal';
+import * as deepEqual from 'deep-equal';
 
 /**
  * Base rule class that all validation functions must implement.
  */
-export default class Rule {
+export default abstract class Rule {
 
     /**
      * Called when the rule is created, with arguments passed in. For
@@ -14,23 +14,22 @@ export default class Rule {
      *
      * @param {RuleParams} options
      */
-    compile() {
+    public compile() {
         return;
     }
 
     /**
      * Sets the rule parameters for equality checking later.
      */
-    _setParams(...args) {
-        this._params = args;
+    private setParams(...args) {
+        this.params = args;
     }
 
     /**
      * Returns whether the rule actually runs operations. If this is
      * false, the rule is disabled.
-     * @return {Boolean}
      */
-    operates() {
+    public operates(): boolean {
         return true;
     }
 
@@ -43,9 +42,7 @@ export default class Rule {
      * @param  {Function} callback Should be called with a
      *                             ValidationError, or nothing.
      */
-    validate() {
-        throw new Error('not implemented');
-    }
+    public abstract validate(): void;
 
     /**
      * Attempts to coerce the value to the match this rule. This will only
@@ -54,11 +51,8 @@ export default class Rule {
      *
      * Returning undefined from this function signals that no coercion
      * took place.
-     *
-     * @param  {*} value
-     * @return {*}
      */
-    coerce() {
+    public coerce(val: any): any {
         return undefined;
     }
 
@@ -68,7 +62,7 @@ export default class Rule {
      * @param {Object} [info] additional information about the failure
      * @return {ValidationError}
      */
-    error(params, info) {
+    public error(params, info): ValidationError {
         return new ValidationError(this, params, info);
     }
 
@@ -77,7 +71,7 @@ export default class Rule {
      * This should not be overridden.
      * @return {String}
      */
-    name() {
+    public name(): string {
         return this.constructor.ruleName();
     }
 
@@ -86,26 +80,24 @@ export default class Rule {
      * @param  {Rule} rule
      * @return {Boolean}
      */
-    identicalTo(rule) {
+    public identicalTo(rule: Rule): boolean {
         return rule instanceof Rule &&
             this.name() === rule.name() &&
-            eq(this._params, rule._params);
+            deepEqual(this.params, rule.params);
     }
 
     /**
      * Returns the priority of this rule; lower priority rules will be
      * run first.
-     * @return {Number}
      */
-    priority() {
+    public priority(): number {
         return priority.normal;
     }
 
     /**
      * Returns the name of the rule, invoked like Jo.name(options...)
-     * @return {String}
      */
-    static ruleName() {
+    public static ruleName () {
         throw new Error('not implemented');
     }
 }

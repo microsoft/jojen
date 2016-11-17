@@ -2,16 +2,13 @@ export const async = {
     /**
      * Attempts to run all the functions, which take callbacks. Runs the
      * callback function when they all resolve or upon the first error.
-     * @param  {[]Function} fns
-     * @param  {Function} callback
-     * @return {Function[]} fns
      */
-    all(fns, callback) {
+    all(fns: ((cb: (err?: Error) => void) => void)[], callback: (err?: Error) => void): void {
         if (fns.length === 0) {
             return callback();
         }
         let todo = fns.length;
-        const cb = (err) => {
+        const cb = (err: Error) => {
             if (todo === -1) {
                 return undefined;
             }
@@ -31,21 +28,17 @@ export const async = {
         for (let i = 0; i < fns.length && todo > 0; i++) {
             fns[i](cb);
         }
-        return fns;
     },
     /**
      * Attempts to run all funcs and callbacks positively on the first success.
-     * @param  {Function[]} fns
-     * @param  {Function} callback
-     * @return {Function[]} fns
      */
-    some(fns, callback) {
+    some(fns: ((cb: (err: Error, data?: any) => void) => void)[], callback: (err: Error, data?: any) => void): void {
         if (fns.length === 0) {
             return callback(new Error('Empty array'));
         }
         let todo = fns.length;
-        let firstFailed;
-        const cb = (err, res) => {
+        let firstFailed: Error;
+        const cb = (err: Error, res: any) => {
             if (todo === -1) {
                 return undefined;
             }
@@ -67,19 +60,18 @@ export const async = {
         for (let i = 0; i < fns.length && todo > 0; i++) {
             fns[i](cb);
         }
-        return fns;
     },
 };
 
 /**
  * Similar to Object.assign, but stricter and about 4x faster.
- * @param  {Object} ...objects
- * @return {Object}
  */
-export function assign(target) {
+export function assign<T>(target: T): T {
     for (let i = 1; i < arguments.length; i++) {
         const arg = arguments[i];
-        if (!arg) continue;
+        if (!arg) {
+            continue;
+        }
 
         for (let k = 0, keys = Object.keys(arg); k < keys.length; k++) {
             target[keys[k]] = arg[keys[k]];
@@ -91,12 +83,9 @@ export function assign(target) {
 
 /**
  * Returns a subset of attributes from the object.
- * @param  {Object} obj
- * @param  {[]String} attrs
- * @return {Object}
  */
-export function pick(obj, attrs) {
-    const out = {};
+export function pick<T>(obj: T, attrs: string[]): T {
+    const out: T = <T>{};
     for (let i = 0; i < attrs.length; i++) {
         out[attrs[i]] = obj[attrs[i]];
     }
@@ -109,15 +98,13 @@ export function pick(obj, attrs) {
  * @param  {Object} obj
  * @return {Object}
  */
-export function clone(obj) {
+export function clone<T>(obj: T): T {
     return assign({}, obj);
 }
 
 /**
  * Escapes all RegEx control characters
- * @param  {String} obj
- * @return {String}
  */
-export function escapeRegExp(str) {
+export function escapeRegExp(str: string) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }

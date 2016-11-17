@@ -1,3 +1,5 @@
+import { Rule } from './types/rule';
+
 /**
  * The Ruleset is an object used for collecting and building sets of validation
  * rules. It contains a tree structure of rules, which can be bound to a
@@ -26,7 +28,7 @@
  * the shallower (less specific) children.
  */
 export default class Ruleset {
-    constructor(parent = null) {
+    constructor(parent: Rule = null) {
         this._node = null;
         this._parent = parent;
         this._children = {};

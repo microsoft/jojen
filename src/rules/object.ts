@@ -3,17 +3,17 @@ import { async, clone, assign } from '../util';
 
 
 class ObjectValidator extends Rule {
-    operates() {
+    public operates() {
         return false;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'object';
     }
 }
 
 class Keys extends Rule {
-    compile(params) {
+    public compile(params) {
         const found = params.invokeFirst(this.constructor, rule => {
             rule._obj = assign({}, rule._obj, params.args[0]);
             rule._keys = rule._keys.concat(Object.keys(params.args[0]));
@@ -27,7 +27,7 @@ class Keys extends Rule {
         this._allowUnknown = false;
     }
 
-    operates() {
+    public operates() {
         return !!this._keys;
     }
 
@@ -38,7 +38,7 @@ class Keys extends Rule {
      * @param  {Function} callback
      * @return {Boolean}
      */
-    _validateUnknown(params, callback) {
+    public _validateUnknown(params, callback) {
         const keys = Object.keys(params.value);
         for (let i = 0; i < keys.length; i++) {
             if (this._keys.indexOf(keys[i]) === -1) {
@@ -50,7 +50,7 @@ class Keys extends Rule {
         return false;
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         const value = params.value;
         if (value === undefined || value === null) {
             return callback(this.error(params));
@@ -87,25 +87,24 @@ class Keys extends Rule {
         return async.all(todo, callback);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'object.keys';
     }
 }
 
 class Unknown extends Rule {
-    compile(params) {
+    public compile(params): void {
         const allow = params.args[0] === undefined ? true : params.args[0];
-        params.invokeLast(Keys, (r) => { r._allowUnknown = allow; });
+        params.invokeLast(Keys, r => { r._allowUnknown = allow; });
     }
 
-    operates() {
+    public operates(): boolean {
         return false;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'object.unknown';
     }
 }
-
 
 module.exports = [ObjectValidator, Keys, Unknown];

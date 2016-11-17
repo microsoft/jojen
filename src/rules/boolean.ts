@@ -5,7 +5,7 @@ import SyncRule from '../types/syncRule';
  */
 class BooleanValidator extends SyncRule {
 
-    coerce(value) {
+    public coerce (value: any): boolean {
         if (value === 'true' || Number(value) === 1) {
             return true;
         }
@@ -15,11 +15,11 @@ class BooleanValidator extends SyncRule {
         return undefined;
     }
 
-    validateSync(params) {
+    public validateSync(params) {
         return typeof params.value === 'boolean';
     }
 
-    static ruleName() {
+    public static ruleName () {
         return 'boolean';
     }
 }

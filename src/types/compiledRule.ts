@@ -6,6 +6,8 @@ import Rule from './rule';
  */
 export default class CompiledRule extends Rule {
 
+    public validate: (params, callback) => void;
+
     /**
      * Returns a string for a function that will be called with the same
      * signature and arguments as #Validator.validate.
@@ -17,12 +19,12 @@ export default class CompiledRule extends Rule {
      *     }`;
      *   }
      */
-    getFn() {
+    public getFn() {
         throw new Error('not implemented');
     }
 
-    compile(...args) {
-        const fn = this.getFn.apply(this, args);
+    public compile(...args) {
+        const fn = this.getFn(...args);
         this.validate = new Function('params', 'callback', fn); //eslint-disable-line
     }
 }

@@ -1,8 +1,8 @@
 import Validator from './validator';
 
-const Jo = module.exports = function () {
+export default function () {
     return new Validator();
-};
+}
 
 // Default validator for Joi compatibility, so we can call methods like
 // Jo.any(). More advanced users will want to subclass this.

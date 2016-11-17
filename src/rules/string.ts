@@ -7,7 +7,7 @@ import isCreditCard from 'validator/lib/isCreditCard';
 import url from 'url';
 import { escapeRegExp } from '../util';
 
-/* eslint-disable max-len */
+/* tslint:disable */
 const emailRegex = /^[-a-z\d~!$%^&*_=+}{'?]+(\.[-a-z\d~!$%^&*_=+}{'?]+)*@([a-z\d_][-a-z\d_]*(\.[-a-z\d_]+)*\.([a-zрф]{2,})|([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}))(:[\d]{1,5})?$/i;
 const guidRegex = /^[\dA-F]{8}[-]?([\dA-F]{4}[-]?){3}[\dA-F]{12}$/i;
 const hexRegex = /^[a-f\d]+$/i;
@@ -18,20 +18,20 @@ const tokenRegex = /^\w+$/i;
 const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/\d+)?$/;
 const ipv6RegEx = /^(?:(?:(?:[\da-f]{1,4}:){7}(?:[\da-f]{1,4}|:))|(?:(?:[\da-f]{1,4}:){6}(?::[\da-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3})|:))|(?:(?:[\da-f]{1,4}:){5}(?:(?:(?::[\da-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3})|:))|(?:(?:[\da-f]{1,4}:){4}(?:(?:(?::[\da-f]{1,4}){1,3})|(?:(?::[\da-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}))|:))|(?:(?:[\da-f]{1,4}:){3}(?:(?:(?::[\da-f]{1,4}){1,4})|(?:(?::[\da-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}))|:))|(?:(?:[\da-f]{1,4}:){2}(?:(?:(?::[\da-f]{1,4}){1,5})|(?:(?::[\da-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}))|:))|(?:(?:[\da-f]{1,4}:)(?:(?:(?::[\da-f]{1,4}){1,6})|(?:(?::[\da-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}))|:))|(?::(?:(?:(?::[\da-f]{1,4}){1,7})|(?:(?::[\da-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}))|:))(\/\d+)?)$/i;
 const hostnameRegEx = /^(([a-z\d]|[a-z\d][a-z\d\-]*[a-z\d])\.)*([a-z\d]|[a-z\d][a-z\d\-]*[a-z\d])$/i;
-/* eslint-enable max-len */
+/* tslint:enable */
 
 class StringValidator extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         return typeof params.value === 'string';
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string';
     }
 }
 
 class Insensitive extends Rule {
-    compile(params) {
+    public compile(params) {
         function cmp(a, b) {
             return typeof a === 'string' && typeof b === 'string' &&
                 a.toLowerCase() === b.toLowerCase();
@@ -40,81 +40,81 @@ class Insensitive extends Rule {
         params.invokeAll(ComparatorRule, rule => rule.addComparator(cmp));
     }
 
-    operates() {
+   public  operates() {
         return false;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.insensitive';
     }
 }
 
-class Min extends SyncRule {
-    compile(params) {
-        this._val = params.args[0];
-    }
+class SingleArgumentBase extends SyncRule {
+    protected val: number;
 
-    validateSync(params) {
-        return params.value.length >= this._val || {
+    public compile(params) {
+        this.val = params.args[0];
+    }
+}
+
+class Min extends SingleArgumentBase {
+
+    public validateSync(params) {
+        return params.value.length >= this.val || {
             length: params.value.length,
-            min: this._val,
+            min: this.val,
         };
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.min';
     }
 }
 
-class Max extends SyncRule {
-    compile(params) {
-        this._val = params.args[0];
-    }
+class Max extends SingleArgumentBase {
 
-    validateSync(params) {
-        return params.value.length <= this._val || {
+    public validateSync(params) {
+        return params.value.length <= this.val || {
             length: params.value.length,
-            max: this._val,
+            max: this.val,
         };
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.max';
     }
 }
 
-class Length extends SyncRule {
-    compile(params) {
-        this._val = params.args[0];
-    }
+class Length extends SingleArgumentBase {
 
-    validateSync(params) {
-        return params.value.length === this._val || {
+    public validateSync(params) {
+        return params.value.length === this.val || {
             length: params.value.length,
-            expected: this._val,
+            expected: this.val,
         };
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.length';
     }
 }
 
 class CreditCard extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         return isCreditCard(params.value);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.creditCard';
     }
 }
 
 class RegEx extends SyncRule {
-    compile(params) {
+    private regExp: RegExp;
+    public compile(params) {
         const orig = params.args[0];
         // TODO: Once RegEx flags is available, us it!
-        this._regEx = orig.global ? new RegExp(orig.source, [
+        this.regExp = orig.global ? new RegExp(orig.source, [
             orig.multiline ? 'm' : '',
             orig.sticky ? 's' : '',
             orig.ignoreCase ? 'i' : '',
@@ -122,34 +122,34 @@ class RegEx extends SyncRule {
         ].join('')) : orig;
     }
 
-    validateSync(params) {
+    public validateSync(params) {
         // TODO: RegEx naming
-        return this._regEx.test(params.value) || {
-            regEx: this._regEx,
+        return this.regExp.test(params.value) || {
+            regEx: this.regExp,
         };
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.regex';
     }
 }
 
 class AlphaNumeric extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         return alnumRegex.test(params.value);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.alphanum';
     }
 }
 
 class Token extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         return tokenRegex.test(params.value);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.token';
     }
 }
@@ -157,17 +157,17 @@ class Token extends SyncRule {
 class Email extends SyncRule {
     // TODO: Options
 
-    validateSync(params) {
+    public validateSync(params) {
         return emailRegex.test(params.value);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.email';
     }
 }
 
 class IP extends SyncRule {
-    compile(params) {
+    public compile(params) {
         const options = params.args[0];
         this._matches = [ipv4Regex, ipv6RegEx];
         this._cidr = 'forbidden';
@@ -194,7 +194,7 @@ class IP extends SyncRule {
         }
     }
 
-    validateSync(params) {
+    public validateSync(params) {
         const res = this._matches.some(regEx => {
             const match = params.value.match(regEx);
             if (!match) {
@@ -221,14 +221,14 @@ class IP extends SyncRule {
         return res;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.ip';
     }
 }
 
 class URI extends SyncRule {
 
-    compile(params) {
+    public compile(params) {
         const options = params.args[0];
         if (!options) {
             return;
@@ -245,7 +245,7 @@ class URI extends SyncRule {
         });
     }
 
-    validateSync(params) {
+    public validateSync(params) {
         const res = url.parse(params.value);
         if (
             this._schemes &&
@@ -270,87 +270,87 @@ class URI extends SyncRule {
         return true;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.uri';
     }
 }
 
 class GUID extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         return guidRegex.test(params.value);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.guid';
     }
 }
 
 class Hex extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         return hexRegex.test(params.value);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.hex';
     }
 }
 
 class Hostname extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         const v = params.value;
         return hostnameRegEx.test(v) || ipv4Regex.test(v) || ipv6RegEx.test(v);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.hostname';
     }
 }
 
 class LowerCase extends SyncRule {
-    coerce(value) {
+    public coerce(value) {
         return value.toLowerCase && value.toLowerCase();
     }
 
-    validateSync(params) {
+    public validateSync(params) {
         return params.value.toLowerCase() === params.value;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.lowercase';
     }
 }
 
 class UpperCase extends SyncRule {
-    coerce(value) {
+    public coerce(value) {
         return value.toUpperCase();
     }
 
-    validateSync(params) {
+    public validateSync(params) {
         return params.value.toUpperCase() === params.value;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.uppercase';
     }
 }
 
 class Trim extends SyncRule {
 
-    coerce(value) {
+    public coerce(value) {
         return value.trim();
     }
 
-    validateSync(params) {
+    public validateSync(params) {
         return params.value.trim() === params.value;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.trim';
     }
 }
 
 class IsoDate extends SyncRule {
-    validateSync(params) {
+    public validateSync(params) {
         if (!dateRegex.test(params.value)) {
             return false;
         }
@@ -362,7 +362,7 @@ class IsoDate extends SyncRule {
         }
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'string.isoDate';
     }
 }

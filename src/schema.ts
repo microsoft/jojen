@@ -14,7 +14,7 @@ class RuleParams {
      * @param {*} ...args
      * @return {Boolean} whether such a rule was found
      */
-    invokeLast(Type, fn) {
+    public invokeLast(Type, fn) {
         for (let i = this.index - 1; i >= 0; i--) {
             if (this.rules[i] instanceof Type) {
                 fn(this.rules[i]);
@@ -32,7 +32,7 @@ class RuleParams {
      * @param {*} ...args
      * @return {Boolean} whether such a rule was found
      */
-    invokeFirst(Type, fn) {
+    public invokeFirst(Type, fn) {
         for (let i = 0; i < this.index; i++) {
             if (this.rules[i] instanceof Type) {
                 fn(this.rules[i]);
@@ -50,7 +50,7 @@ class RuleParams {
      * @param {*} ...args
      * @return {Boolean} whether such a rule was found
      */
-    invokeAll(Type, fn) {
+    public invokeAll(Type, fn) {
         let found = false;
         for (let i = 0; i < this.rules.length; i++) {
             if (this.rules[i] instanceof Type) {
@@ -93,7 +93,7 @@ export default class Schema {
      * @param  {[]Rule} rules
      * @return {[]Rule}
      */
-    _build(Node, args, list) {
+    private _build(Node, args, list) {
         if (Node === null) return list;
 
         const node = new Node();
@@ -107,7 +107,7 @@ export default class Schema {
      * the rule set and removes rules that don't operate.
      * @return {[]Rule}
      */
-    _compile() {
+    private _compile() {
         // Stable sort the rules so that higher-priority rules come first.
         // We implement this as a stable sort by comparing equal-priority
         // rules by their position.
@@ -146,7 +146,7 @@ export default class Schema {
      * Gets a list of rules for this schema.
      * @return {Schema}
      */
-    getRules() {
+    public getRules() {
         if (!this._compiled) {
             this._rules = this._compile();
             this._compiled = true;

@@ -3,48 +3,49 @@ import ComparatorRule from '../types/comparatorRule';
 import priority from '../priority';
 
 class Any extends Rule {
-    operates() {
+    public operates() {
         return false;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'any';
     }
 }
 
 class Optional extends Rule {
-    compile() {
-        this._enabled = true;
+    private enabled: boolean;
+    public compile() {
+        this.enabled = true;
     }
 
-    validate(params, callback) {
-        if (this._enabled && params.value === undefined) {
+    public validate(params, callback) {
+        if (this.enabled && params.value === undefined) {
             return callback(undefined, { abort: true });
         }
 
         return callback();
     }
 
-    _disable() {
-        this._enabled = false;
+    private _disable() {
+        this.enabled = false;
     }
 
-    priority() {
+    public priority() {
         return priority.halter;
     }
 
 
-    static ruleName() {
+    public static ruleName() {
         return 'optional';
     }
 }
 
 class Required extends Rule {
-    compile(params) {
+    public compile(params) {
         params.invokeAll(Optional, rule => rule._disable());
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         if (params.value === undefined) {
             return callback(this.error(params));
         }
@@ -52,7 +53,7 @@ class Required extends Rule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'required';
     }
 }
@@ -63,7 +64,7 @@ class Required extends Rule {
  *  - tries to compact those into a single top-level rule
  */
 class BuiltComparatorRule extends ComparatorRule {
-    compile(params) {
+    public compile(params) {
         let args;
         if (Array.isArray(params.args[0])) {
             args = params.args[0];
@@ -76,17 +77,17 @@ class BuiltComparatorRule extends ComparatorRule {
         }
     }
 
-    operates() {
+    public operates() {
         return !!this._values;
     }
 
-    _add(values) {
+    private _add(values) {
         this._values = this._values.concat(values);
     }
 }
 
 class Valid extends BuiltComparatorRule {
-    validate(params, callback) {
+    public validate(params, callback) {
         for (let i = 0; i < this._values.length; i++) {
             if (this.compare(this._values[i], params.value)) {
                 return callback(undefined, { abort: true });
@@ -96,17 +97,17 @@ class Valid extends BuiltComparatorRule {
         return callback(this.error(params, { allowed: this._values }));
     }
 
-    priority() {
+    public priority() {
         return priority.halter;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'valid';
     }
 }
 
 class Invalid extends BuiltComparatorRule {
-    validate(params, callback) {
+    public validate(params, callback) {
         for (let i = 0; i < this._values.length; i++) {
             if (this.compare(this._values[i], params.value)) {
                 return callback(this.error(params, {
@@ -118,13 +119,13 @@ class Invalid extends BuiltComparatorRule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'invalid';
     }
 }
 
 class Forbidden extends Rule {
-    validate(params, callback) {
+    public validate(params, callback) {
         if (params.value !== undefined) {
             return callback(this.error(params));
         }
@@ -132,13 +133,13 @@ class Forbidden extends Rule {
         return callback();
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'forbidden';
     }
 }
 
 class Allow extends BuiltComparatorRule {
-    validate(params, callback) {
+    public validate(params, callback) {
         for (let i = 0; i < this._values.length; i++) {
             if (this.compare(this._values[i], params.value)) {
                 return callback(undefined, { abort: true });
@@ -148,21 +149,21 @@ class Allow extends BuiltComparatorRule {
         return callback();
     }
 
-    priority() {
+    public priority() {
         return priority.halter;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'allow';
     }
 }
 
 class Custom extends Rule {
-    compile(params) {
+    public compile(params) {
         this._func = params.args[0];
     }
 
-    validate(params, callback) {
+    public validate(params, callback) {
         try {
             this._func(params.value, error => {
                 if (error) { // error is equivalent to details
@@ -177,21 +178,21 @@ class Custom extends Rule {
         }
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'custom';
     }
 }
 
 class Default extends Rule {
-    compile(params) {
+    public compile(params) {
         this._default = params.args[0];
     }
 
-    priority() {
+    public priority() {
         return priority.valueOverride;
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'default';
     }
 }
