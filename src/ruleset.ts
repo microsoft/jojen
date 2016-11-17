@@ -1,4 +1,4 @@
-import { Rule } from './types/rule';
+import Rule from './types/rule';
 
 /**
  * The Ruleset is an object used for collecting and building sets of validation
@@ -28,37 +28,33 @@ import { Rule } from './types/rule';
  * the shallower (less specific) children.
  */
 export default class Ruleset {
-    constructor(parent: Rule = null) {
-        this._node = null;
-        this._parent = parent;
-        this._children = {};
+    private node: Rule = null;
+    private children: { [prop: string]: Rule } = {};
+    constructor(private parent: Ruleset = null) {
     }
 
     /**
      * Returns the node of this ruleset: a Rule, or null.
-     * @return {Rule}
      */
-    node() {
-        return this._node;
+    public getNode (): Rule {
+        return this.node;
     }
 
     /**
      * Adds a new rule to the ruleset.
-     * @param {[]String} path
-     * @param {Rule} rule
      */
-    addRule(path, rule) {
+    public addRule(path: string[], rule: Rule) {
         if (path.length === 0) {
-            this._node = rule;
+            this.node = rule;
             return;
         }
 
         const head = path[0];
-        if (!this._children[head]) {
-            this._children[head] = new Ruleset(this);
+        if (!this.children[head]) {
+            this.children[head] = new Ruleset(this);
         }
 
-        this._children[head].addRule(path.slice(1), rule);
+        this.children[head].addRule(path.slice(1), rule);
     }
 
     /**
@@ -69,13 +65,13 @@ export default class Ruleset {
      *                       be the returned value from the built function.
      * @return {Object}
      */
-    buildChain(obj, fn) {
-        if (this._parent) {
-            this._parent.buildChain(obj, fn);
+    public buildChain(obj, fn) {
+        if (this.parent) {
+            this.parent.buildChain(obj, fn);
         }
 
         Object.keys(this._children).forEach((key) => {
-            const child = this._children[key];
+            const child = this.children[key];
             const handler = function (...args) {
                 return fn.call(this, key, child, args);
             };

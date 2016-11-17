@@ -2,6 +2,8 @@ import Rule from '../types/rule';
 import ComparatorRule from '../types/comparatorRule';
 import priority from '../priority';
 
+import { RuleParams } from '../RuleParams';
+
 class Any extends Rule {
     public operates() {
         return false;
@@ -26,7 +28,7 @@ class Optional extends Rule {
         return callback();
     }
 
-    private _disable() {
+    public disable() {
         this.enabled = false;
     }
 
@@ -41,8 +43,8 @@ class Optional extends Rule {
 }
 
 class Required extends Rule {
-    public compile(params) {
-        params.invokeAll(Optional, rule => rule._disable());
+    public compile(params: RuleParams) {
+        params.invokeAll(Optional, rule => rule.disable());
     }
 
     public validate(params, callback) {
@@ -64,7 +66,8 @@ class Required extends Rule {
  *  - tries to compact those into a single top-level rule
  */
 class BuiltComparatorRule extends ComparatorRule {
-    public compile(params) {
+    protected values: any[] = [];
+    public compile(params: RuleParams) {
         let args;
         if (Array.isArray(params.args[0])) {
             args = params.args[0];
@@ -72,17 +75,17 @@ class BuiltComparatorRule extends ComparatorRule {
             args = params.args;
         }
 
-        if (!params.invokeFirst(this.constructor, (r) => { r._add(args); })) {
-            this._values = args;
+        if (!params.invokeFirst(this.constructor, r => { r.add(args); })) {
+            this.values = args;
         }
     }
 
     public operates() {
-        return !!this._values;
+        return !!this.values;
     }
 
-    private _add(values) {
-        this._values = this._values.concat(values);
+    private add(values) {
+        this.values = this.values.concat(values);
     }
 }
 
@@ -184,7 +187,7 @@ class Custom extends Rule {
 }
 
 class Default extends Rule {
-    public compile(params) {
+    public compile(params: RuleParams) {
         this._default = params.args[0];
     }
 

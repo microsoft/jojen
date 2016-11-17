@@ -1,26 +1,29 @@
 import Rule from '../types/rule';
 import { async } from '../util';
+import { RuleParams } from '../RuleParams';
+import { Schema } from '../Schema';
 
 class AlternativesValidator extends Rule {
-    public compile(params) {
+    protected schemas: Schema[];
+    public compile(params: RuleParams) {
         const arr = params.args[0];
         if (Array.isArray(arr)) {
-            this._schemas = arr;
+            this.schemas = arr;
         } else {
-            this._schemas = [];
+            this.schemas = [];
         }
     }
 
     public validate(params, callback) {
-        const schemaChecks = this._schemas.map(schema =>
+        const schemaChecks = this.schemas.map(schema =>
             done => params.validator.validate(params.value, schema, params.options, done)
         );
 
         async.some(schemaChecks, callback);
     }
 
-    private _add(alts) {
-        this._schemas = this._schemas.concat(alts);
+    public add(alts: Schema[]) {
+        this.schemas = this.schemas.concat(alts);
     }
 
     public static ruleName() {
@@ -29,17 +32,17 @@ class AlternativesValidator extends Rule {
 }
 
 class Try extends Rule {
-    operates() {
+    public operates() {
         return false;
     }
 
-    compile(params) {
+    public compile(params: RuleParams) {
         params.invokeLast(AlternativesValidator, v => {
-            v._add(params.args);
+            v.add(params.args);
         });
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'alternatives.try';
     }
 }

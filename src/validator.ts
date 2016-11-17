@@ -1,5 +1,6 @@
 import Ruleset from './ruleset';
 import Schema from './schema';
+import Rule from './types/rule';
 
 import Any from './rules/any';
 
@@ -13,16 +14,21 @@ const defaultOptions = Object.freeze({
     // todo(connor4312): fill out the rest of the Joi options
 });
 
+export interface IValidationOptions {
+    convert: boolean;
+    captureStack: boolean;
+}
+
 /**
  * The validator is the main entry point for building validation schemas.
  * You can .add() Rules to it, and also start building schemas (e.g.
  * Jo.required()) directly on the validator instance.
  */
 export default class Validator {
+    private ruleset = new Ruleset()
+    private schema: Schema = null;
+    private lang: Language = null;
     constructor() {
-        this._ruleset = new Ruleset();
-        this._schema = null;
-        this._lang = null;
         this.add(defaultRules);
     }
 
@@ -31,7 +37,7 @@ export default class Validator {
      * @param {Rule|[]Rule} rules
      * @return Validator
      */
-    add(rules) {
+    public add(rules: Rule|Rule[]) {
         if (!Array.isArray(rules)) {
             this.add([rules]);
         }
@@ -58,7 +64,7 @@ export default class Validator {
      * @param  {Object|String} language
      * @return {Validator}
      */
-    load(language) {
+    public load(language) {
         if (typeof language === 'string') {
             this._lang = require(`./lang/${language}`);
         } else {
@@ -79,7 +85,7 @@ export default class Validator {
      *     stacktraces to validation errors.
      * @param  {Function} callback
      */
-    validate(value, schema, options, callback) {
+    public validate(value: any, schema: Schema, options: IValidationOptions, callback: (err: Error, val?: any) => void) {
         if (typeof options === 'function') {
             callback = options;
             options = defaultOptions;
@@ -91,34 +97,37 @@ export default class Validator {
             const rule = rules[0];
             if (!rule) return callback(null, v);
 
-            return rule.validate({
-                options,
-                value: v,
-                validator: this,
-                path: options._path,
-            }, (err, res) => {
-                if (err) {
-                    if (options.convert && !triedToConvert) {
-                        const converted = rule.coerce(v);
-                        if (converted !== undefined) {
-                            return run(converted, rules, true);
+            return rule.validate(
+                {
+                    options,
+                    value: v,
+                    validator: this,
+                    path: options._path,
+                },
+                (err, res) => {
+                    if (err) {
+                        if (options.convert && !triedToConvert) {
+                            const converted = rule.coerce(v);
+                            if (converted !== undefined) {
+                                return run(converted, rules, true);
+                            }
                         }
+
+                        if (options.captureStack) {
+                            err.addStackTrace();
+                        }
+
+                        err.attach(this._lang);
+                        return callback(err, v);
                     }
 
-                    if (options.captureStack) {
-                        err.addStackTrace();
+                    if (res && res.abort) {
+                        return callback(null, v);
                     }
 
-                    err.attach(this._lang);
-                    return callback(err, v);
+                    return run(v, rules.slice(1));
                 }
-
-                if (res && res.abort) {
-                    return callback(null, v);
-                }
-
-                return run(v, rules.slice(1));
-            });
+            );
         };
 
         const rules = schema.getRules();
@@ -142,10 +151,10 @@ export default class Validator {
      * @param  {Object}   [options]
      * @return {{value: *, error: !ValidationError}}
      */
-    validateSync(value, schema, options) {
-        let done;
-        let error;
-        let retVal;
+    public validateSync(value: any, schema: Schema, options?: IValidationOptions) {
+        let done: boolean;
+        let error: Error;
+        let retVal: any;
         this.validate(value, schema, options, (err, val) => {
             done = true;
             error = err;
@@ -169,7 +178,7 @@ export default class Validator {
      * Or replaces it if an error object.
      * @return {*} The validated after it passed validation.
      */
-    assert(value, schema, message) {
+    public assert(value: any, schema: Schema, message: string | Error) {
         const ret = this.validateSync(value, schema);
         const error = ret.error;
         if (!error) {

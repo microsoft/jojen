@@ -10,6 +10,8 @@ import { assign, pick } from './util';
  */
 
 export default class ValidationError extends Error {
+    public readonly isJoi: boolean = true; // shh! They'll never find us!
+    public readonly name = 'ValidationError';
     constructor (rule, params, info) {
         super();
         const opts = assign({}, params, {
@@ -18,8 +20,6 @@ export default class ValidationError extends Error {
         }, info);
         const key = opts.path[opts.path.length - 1];
 
-        this.isJoi = true; // shh! They'll never find us!
-        this.name = 'ValidationError';
         this._opts = opts;
         this._opts.key = key;
 

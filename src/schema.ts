@@ -1,67 +1,5 @@
-class RuleParams {
-    constructor(rule, rules) {
-        this._rule = rule;
-
-        this.index = rules.indexOf(rule);
-        this.rules = rules;
-        this.args = rule._params;
-    }
-
-    /**
-     * Looks for the closest rule of `Type`, and calls the function on it.
-     * @param {Function} Type
-     * @param {Function} fn
-     * @param {*} ...args
-     * @return {Boolean} whether such a rule was found
-     */
-    public invokeLast(Type, fn) {
-        for (let i = this.index - 1; i >= 0; i--) {
-            if (this.rules[i] instanceof Type) {
-                fn(this.rules[i]);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Similar to invokeLast, but finds the furthest rule of `Type` to call on.
-     * @param {Function} Type
-     * @param {Function} fn
-     * @param {*} ...args
-     * @return {Boolean} whether such a rule was found
-     */
-    public invokeFirst(Type, fn) {
-        for (let i = 0; i < this.index; i++) {
-            if (this.rules[i] instanceof Type) {
-                fn(this.rules[i]);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Similar to invokeLast/First, but invokes the function on all `Type`.
-     * @param {Function} Type
-     * @param {Function} fn
-     * @param {*} ...args
-     * @return {Boolean} whether such a rule was found
-     */
-    public invokeAll(Type, fn) {
-        let found = false;
-        for (let i = 0; i < this.rules.length; i++) {
-            if (this.rules[i] instanceof Type) {
-                fn(this.rules[i]);
-                found = true;
-            }
-        }
-
-        return found;
-    }
-}
+import Rule from './types/rule';
+import RuleSet from './ruleset';
 
 /**
  * The Schema is an immutable object used for building definitions
@@ -70,10 +8,11 @@ class RuleParams {
  * the Ruleset class for calling conventions. On each validation call,
  * a new Schema is created and returned in the new rule's context.
  */
-export default class Schema {
-    constructor(ruleset, generators = []) {
+export class Schema {
+    private compiled: boolean = false;
+
+    constructor(ruleset: RuleSet, generators = []) {
         this._generators = generators;
-        this._compiled = false;
         this._rules = null; // filled on compile
 
         ruleset.buildChain(this, (method, child, args) => {
@@ -147,9 +86,9 @@ export default class Schema {
      * @return {Schema}
      */
     public getRules() {
-        if (!this._compiled) {
+        if (!this.compiled) {
             this._rules = this._compile();
-            this._compiled = true;
+            this.compiled = true;
         }
 
         return this._rules;
