@@ -1,4 +1,4 @@
-export default {
+export const english = {
     required: (opts) => `"${opts.key}" is required.`,
     forbidden: (opts) => `"${opts.key}" is forbidden.`,
 

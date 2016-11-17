@@ -1,7 +1,8 @@
 import Ruleset from './ruleset';
 import { Schema } from './schema';
 import { Rule } from './types/rule';
-
+import * as languages from './lang';
+import { ILanguage } from './lang';
 import Any from './rules/any';
 
 import { assign } from './util';
@@ -27,7 +28,7 @@ export interface IValidationOptions {
 export default class Validator {
     private ruleset = new Ruleset()
     private schema: Schema = null;
-    private lang: Language = null;
+    private lang: ILanguage = null;
     constructor() {
         this.add(defaultRules);
     }

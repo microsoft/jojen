@@ -1,9 +1,9 @@
-import Rule from '../types/rule';
+import { Rule } from '../types/rule';
 import { async } from '../util';
 import { RuleParams } from '../RuleParams';
 import { Schema } from '../Schema';
 
-class AlternativesValidator extends Rule {
+export class AlternativesValidator extends Rule {
     protected schemas: Schema[];
     public compile(params: RuleParams) {
         const arr = params.args[0];
@@ -31,7 +31,7 @@ class AlternativesValidator extends Rule {
     }
 }
 
-class Try extends Rule {
+export class Try extends Rule {
     public operates() {
         return false;
     }
@@ -46,5 +46,3 @@ class Try extends Rule {
         return 'alternatives.try';
     }
 }
-
-module.exports = [AlternativesValidator, Try];

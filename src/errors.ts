@@ -1,3 +1,4 @@
+import { ILanguage } from './lang';
 import { Rule } from './types/rule';
 import { assign, pick } from './util';
 
@@ -13,16 +14,29 @@ import { assign, pick } from './util';
 export class ValidationError extends Error {
     public readonly isJoi: boolean = true; // shh! They'll never find us!
     public readonly name = 'ValidationError';
+    private opts: {
+        rule: string;
+        ruleParams: any[];
+    };
+    public details: {
+        message?: string;
+        path: string;
+        type: string;
+        context: {
+            key: string;
+        }
+    }[];
+
     constructor (rule: Rule, params, info) {
         super();
         const opts = assign({}, params, {
             rule: rule.name(),
-            ruleParams: rule._params,
+            ruleParams: rule.params,
         }, info);
         const key = opts.path[opts.path.length - 1];
 
-        this._opts = opts;
-        this._opts.key = key;
+        this.opts = opts;
+        this.opts.key = key;
 
         this.details = [{
             path: opts.path.join('.'),
@@ -36,7 +50,7 @@ export class ValidationError extends Error {
      * order to fill out its details.
      * @param  {Object} language
      */
-    public attach (language) {
+    public attach (language: ILanguage) {
         if (!language) {
             return;
         }
@@ -47,7 +61,7 @@ export class ValidationError extends Error {
                 continue;
             }
 
-            detail.message = language[detail.type](this._opts);
+            detail.message = language[detail.type](this.opts);
         }
     }
 
@@ -66,7 +80,7 @@ export class ValidationError extends Error {
     public toJSON (): Object {
         const obj = pick(this, ['isJoi', 'name', 'details']);
         if (this.message) {
-            obj.mesage = this.message;
+            obj.message = this.message;
         }
 
         return obj;
@@ -76,7 +90,7 @@ export class ValidationError extends Error {
      * Captures and attaches a stack trace to the error.
      */
     public addStackTrace (): void {
-        if (typeof Error.captureStackTrace === 'function') {
+        if ('captureStackTrace' in Error) {
             Error.captureStackTrace(this);
         } else {
             this.stack = (new Error()).stack;

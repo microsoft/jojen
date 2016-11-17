@@ -74,7 +74,7 @@ export default class Ruleset {
 
         Object.keys(this.children).forEach((key) => {
             const child = this.children[key];
-            const handler = function (...args) {
+            const handler = function (...args: any[]) {
                 return fn.call(this, key, child, args);
             };
 

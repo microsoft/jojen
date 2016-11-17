@@ -2,9 +2,8 @@
  * Object used to export constants for priorities. Rules will be reordered
  * in stable sort so that rules with lower priority values preceed those
  * of higher priorities.
- * @type {Object.<String, Number>}
  */
-export default Object.freeze({
+export const priority = Object.freeze({
     // Used for .default()
     valueOverride: -1,
     // Halters are rules like .allow() which have the ability to stop

@@ -1,13 +1,17 @@
 import Validator from './validator';
+import { ILanguage } from './lang';
 
 export default function () {
     return new Validator();
 }
 
+import { english } from './lang/en';
+
+
 // Default validator for Joi compatibility, so we can call methods like
 // Jo.any(). More advanced users will want to subclass this.
 const defaultValidator = new Validator();
-defaultValidator.load(require('./lang/en'));
+defaultValidator.load(english);
 
 Object
     .keys(defaultValidator)

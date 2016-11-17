@@ -1,20 +1,22 @@
 import { ValidationError } from '../errors';
-import priority from '../priority';
+import { priority } from '../priority';
 import { RuleParams } from '../RuleParams';
 import * as deepEqual from 'deep-equal';
+
+export interface IRuleCtor<T extends Rule> {
+    new (value?: any) : T;
+}
 
 /**
  * Base rule class that all validation functions must implement.
  */
 export abstract class Rule {
-    private params: any[];
+    public params: any[];
 
     /**
      * Called when the rule is created, with arguments passed in. For
      * example, `.rule(1, 2)` will cause this to be invoked with the
      * arguments `1, 2`.
-     *
-     * @param {RuleParams} options
      */
     public compile(params: RuleParams) {
         return;
@@ -64,14 +66,13 @@ export abstract class Rule {
      * @param {Object} [info] additional information about the failure
      * @return {ValidationError}
      */
-    public error(params, info): ValidationError {
+    public error (params, info?): ValidationError {
         return new ValidationError(this, params, info);
     }
 
     /**
      * Method to return the rule's static name.
      * This should not be overridden.
-     * @return {String}
      */
     public name(): string {
         return this.constructor.ruleName();
@@ -79,8 +80,6 @@ export abstract class Rule {
 
     /**
      * Returns whether this rule is identical to another.
-     * @param  {Rule} rule
-     * @return {Boolean}
      */
     public identicalTo(rule: Rule): boolean {
         return rule instanceof Rule &&

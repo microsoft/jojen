@@ -2,10 +2,6 @@ import { Rule } from './types/rule';
 import RuleSet from './ruleset';
 import { RuleParams } from './RuleParams';
 
-interface IRuleCtor<T extends Rule> {
-    new (value?: any) : T;
-}
-
 /**
  * The Schema is an immutable object used for building definitions
  * that objects can be validated against. It provides methods that can be
