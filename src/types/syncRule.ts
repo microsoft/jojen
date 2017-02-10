@@ -1,11 +1,12 @@
-import { Rule } from './rule';
+import { Rule, IRuleValidationParams} from './rule';
+import { RuleParams } from '../RuleParams';
 
 /**
  * Helper rule that handles callback calling for synchronous validation rules.
  */
 export abstract class SyncRule extends Rule {
 
-    public validate(params, callback) {
+    public validate(params: IRuleValidationParams<any>, callback: (error?: Error) => void) {
         const res = this.validateSync(params);
         if (res === true) {
             return callback();
@@ -20,5 +21,12 @@ export abstract class SyncRule extends Rule {
      * Validates synchronously.
      * If boolean, true = success, false = error.
      */
-    public abstract validateSync(params): boolean | Object;
+    public abstract validateSync(params: IRuleValidationParams<any>): boolean | Object;
+}
+
+export abstract class SingeValRule<T> extends SyncRule {
+    protected val: T;
+    public compile (params: RuleParams) {
+        this.val = params.args[0];
+    }
 }

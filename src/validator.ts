@@ -3,7 +3,7 @@ import { Schema } from './schema';
 import { Rule } from './types/rule';
 import * as languages from './lang';
 import { ILanguage } from './lang';
-import Any from './rules/any';
+import { Default } from './rules/any';
 
 import { assign } from './util';
 import defaultRules from './rules';
@@ -18,6 +18,7 @@ const defaultOptions = Object.freeze({
 export interface IValidationOptions {
     convert: boolean;
     captureStack: boolean;
+    path?: string;
 }
 
 /**
@@ -25,7 +26,7 @@ export interface IValidationOptions {
  * You can .add() Rules to it, and also start building schemas (e.g.
  * Jo.required()) directly on the validator instance.
  */
-export default class Validator {
+export class Validator {
     private ruleset = new Ruleset()
     private schema: Schema = null;
     private lang: ILanguage = null;
@@ -45,7 +46,7 @@ export default class Validator {
         }
 
         rules.forEach((rule) => {
-            this.ruleset.addRule(rule.ruleName().split('.'), rule);
+            this.ruleset.addRule(rule.name().split('.'), rule);
         });
 
         this.schema = new Schema(this.ruleset).optional();
@@ -100,7 +101,7 @@ export default class Validator {
                     options,
                     value: v,
                     validator: this,
-                    path: options._path,
+                    path: options.path,
                 },
                 (err, res) => {
                     if (err) {
@@ -134,9 +135,10 @@ export default class Validator {
         const rules = schema.getRules();
 
         // TODO: Refactor this to use *option* rules. Terrible hack.
-        if (rules[0] instanceof Any[8]) {
+        const r = rules[0];
+        if (r instanceof Default) {
             if (value === undefined) {
-                callback(null, rules[0]._default);
+                callback(null, r.default);
                 return;
             }
             rules.shift();

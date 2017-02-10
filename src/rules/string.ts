@@ -1,9 +1,11 @@
-import Rule from '../types/rule';
-import ComparatorRule from '../types/comparatorRule';
-import SyncRule from '../types/syncRule';
+import { ComparatorRule } from '../types/comparatorRule';
+import { Rule, NonOperatingRule, IRuleValidationParams, IRuleCtor } from '../types/rule';
+import { SyncRule } from '../types/syncRule';
+import { RuleParams } from '../RuleParams';
 
-import isURL from 'validator/lib/isURL';
-import isCreditCard from 'validator/lib/isCreditCard';
+
+import * as isURL from 'validator/lib/isURL';
+import * as isCreditCard from 'validator/lib/isCreditCard';
 import url from 'url';
 import { escapeRegExp } from '../util';
 
@@ -20,8 +22,8 @@ const ipv6RegEx = /^(?:(?:(?:[\da-f]{1,4}:){7}(?:[\da-f]{1,4}|:))|(?:(?:[\da-f]{
 const hostnameRegEx = /^(([a-z\d]|[a-z\d][a-z\d\-]*[a-z\d])\.)*([a-z\d]|[a-z\d][a-z\d\-]*[a-z\d])$/i;
 /* tslint:enable */
 
-class StringValidator extends SyncRule {
-    public validateSync(params) {
+export class StringValidator extends SyncRule {
+    public validateSync(params: IRuleValidationParams<any>) {
         return typeof params.value === 'string';
     }
 
@@ -30,14 +32,15 @@ class StringValidator extends SyncRule {
     }
 }
 
-class Insensitive extends Rule {
-    public compile(params) {
-        function cmp(a, b) {
+export class Insensitive extends NonOperatingRule {
+    public compile(params: RuleParams) {
+        function cmp(a: any, b: any) {
             return typeof a === 'string' && typeof b === 'string' &&
                 a.toLowerCase() === b.toLowerCase();
         }
 
-        params.invokeAll(ComparatorRule, rule => rule.addComparator(cmp));
+        // FIXME: Hacky
+        params.invokeAll(<any>ComparatorRule, (rule: ComparatorRule) => rule.addComparator(cmp));
     }
 
    public  operates() {
@@ -49,17 +52,17 @@ class Insensitive extends Rule {
     }
 }
 
-class SingleArgumentBase extends SyncRule {
+export abstract class SingleArgumentBase extends SyncRule {
     protected val: number;
 
-    public compile(params) {
+    public compile(params: RuleParams) {
         this.val = params.args[0];
     }
 }
 
-class Min extends SingleArgumentBase {
+export class Min extends SingleArgumentBase {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return params.value.length >= this.val || {
             length: params.value.length,
             min: this.val,
@@ -71,9 +74,9 @@ class Min extends SingleArgumentBase {
     }
 }
 
-class Max extends SingleArgumentBase {
+export class Max extends SingleArgumentBase {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return params.value.length <= this.val || {
             length: params.value.length,
             max: this.val,
@@ -85,9 +88,9 @@ class Max extends SingleArgumentBase {
     }
 }
 
-class Length extends SingleArgumentBase {
+export class Length extends SingleArgumentBase {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return params.value.length === this.val || {
             length: params.value.length,
             expected: this.val,
@@ -100,7 +103,7 @@ class Length extends SingleArgumentBase {
 }
 
 class CreditCard extends SyncRule {
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return isCreditCard(params.value);
     }
 
@@ -109,9 +112,9 @@ class CreditCard extends SyncRule {
     }
 }
 
-class RegEx extends SyncRule {
+export class RegEx extends SyncRule {
     private regExp: RegExp;
-    public compile(params) {
+    public compile(params: RuleParams) {
         const orig = params.args[0];
         // TODO: Once RegEx flags is available, us it!
         this.regExp = orig.global ? new RegExp(orig.source, [
@@ -122,7 +125,7 @@ class RegEx extends SyncRule {
         ].join('')) : orig;
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         // TODO: RegEx naming
         return this.regExp.test(params.value) || {
             regEx: this.regExp,
@@ -134,8 +137,8 @@ class RegEx extends SyncRule {
     }
 }
 
-class AlphaNumeric extends SyncRule {
-    public validateSync(params) {
+export class AlphaNumeric extends SyncRule {
+    public validateSync(params: IRuleValidationParams<string>) {
         return alnumRegex.test(params.value);
     }
 
@@ -144,8 +147,8 @@ class AlphaNumeric extends SyncRule {
     }
 }
 
-class Token extends SyncRule {
-    public validateSync(params) {
+export class Token extends SyncRule {
+    public validateSync(params: IRuleValidationParams<string>) {
         return tokenRegex.test(params.value);
     }
 
@@ -154,10 +157,10 @@ class Token extends SyncRule {
     }
 }
 
-class Email extends SyncRule {
+export class Email extends SyncRule {
     // TODO: Options
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return emailRegex.test(params.value);
     }
 
@@ -166,12 +169,16 @@ class Email extends SyncRule {
     }
 }
 
-class IP extends SyncRule {
-    public compile(params) {
+export type IPVersion = 'ipv4' | 'ipv6';
+
+export class IP extends SyncRule {
+    private matches = [ipv4Regex, ipv6RegEx];
+    private cidr: 'forbidden' | 'required' | 'optional' = 'forbidden';
+    private versions: IPVersion[] = ['ipv4', 'ipv6'];
+    private cidrAllowed = false;
+    private cidrRequired = false;
+    public compile(params: RuleParams) {
         const options = params.args[0];
-        this._matches = [ipv4Regex, ipv6RegEx];
-        this._cidr = 'forbidden';
-        this._versions = ['ipv4', 'ipv6'];
         if (!options) {
             return;
         }
@@ -185,40 +192,41 @@ class IP extends SyncRule {
             if (vers.indexOf('ipv6') !== -1) {
                 matches.push(ipv6RegEx);
             }
-            this._versions = vers;
-            this._matches = matches;
+            this.versions = vers;
+            this.matches = matches;
         }
         if (options.cidr) {
-            this._cidrAllowed = options.cidr === 'required' || options.cidr === 'optional';
-            this._cidrRequired = options.cidr === 'required';
+            this.cidrAllowed = options.cidr === 'required' || options.cidr === 'optional';
+            this.cidrRequired = options.cidr === 'required';
         }
     }
 
-    public validateSync(params) {
-        const res = this._matches.some(regEx => {
+    public validateSync(params: IRuleValidationParams<string>) {
+        let reason: string;
+        const res = this.matches.find(regEx => {
             const match = params.value.match(regEx);
             if (!match) {
                 return false;
             }
-            if (match[1] && !this._cidrAllowed) {
-                return {
-                    reason: 'cidr-not-allowed',
-                };
+            if (match[1] && !this.cidrAllowed) {
+                reason = 'cidr-not-allowed';
+                return false;
             }
-            if (!match[1] && this._cidrRequired) {
-                return {
-                    reason: 'cidr-required',
-                };
+            if (!match[1] && this.cidrRequired) {
+                reason = 'cidr-required';
+                return false;
             }
             return true;
         });
-        if (!res) {
+        if (!res && !reason) {
             return {
                 reason: 'not-matched',
-                allowed: this._versions,
+                allowed: this.versions,
             };
         }
-        return res;
+        return {
+            reason,
+        }
     }
 
     public static ruleName() {
@@ -226,15 +234,16 @@ class IP extends SyncRule {
     }
 }
 
-class URI extends SyncRule {
-
-    public compile(params) {
+export class URI extends SyncRule {
+    private allowRelative: boolean;
+    private schemes: RegExp[];
+    public compile(params: RuleParams) {
         const options = params.args[0];
         if (!options) {
             return;
         }
-        this._allowRelative = options.allowRelative;
-        this._schemes = (options.schemes || []).map(matcher => {
+        this.allowRelative = options.allowRelative;
+        this.schemes = (this.schemes || <RegExp[]>[]).map(matcher => {
             if (matcher instanceof RegExp) {
                 return matcher;
             }
@@ -245,20 +254,20 @@ class URI extends SyncRule {
         });
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         const res = url.parse(params.value);
         if (
-            this._schemes &&
-            !this._schemes.some(matcher => matcher.test(res.protocol.slice(0, -1)))
+            this.schemes &&
+            !this.schemes.some(matcher => matcher.test(res.protocol.slice(0, -1)))
         ) {
             return {
                 reason: 'scheme not allowed',
-                allowed: this._schemes,
+                allowed: this.schemes,
             };
         }
         if (!res.host) {
             if (res.path) {
-                return this._allowRelative || {
+                return this.allowRelative || {
                     reason: 'relativ-not-allowed',
                 };
             }
@@ -275,8 +284,8 @@ class URI extends SyncRule {
     }
 }
 
-class GUID extends SyncRule {
-    public validateSync(params) {
+export class GUID extends SyncRule {
+    public validateSync(params: IRuleValidationParams<string>) {
         return guidRegex.test(params.value);
     }
 
@@ -285,8 +294,8 @@ class GUID extends SyncRule {
     }
 }
 
-class Hex extends SyncRule {
-    public validateSync(params) {
+export class Hex extends SyncRule {
+    public validateSync(params: IRuleValidationParams<string>) {
         return hexRegex.test(params.value);
     }
 
@@ -295,8 +304,8 @@ class Hex extends SyncRule {
     }
 }
 
-class Hostname extends SyncRule {
-    public validateSync(params) {
+export class Hostname extends SyncRule {
+    public validateSync(params: IRuleValidationParams<string>) {
         const v = params.value;
         return hostnameRegEx.test(v) || ipv4Regex.test(v) || ipv6RegEx.test(v);
     }
@@ -306,12 +315,12 @@ class Hostname extends SyncRule {
     }
 }
 
-class LowerCase extends SyncRule {
-    public coerce(value) {
+export class LowerCase extends SyncRule {
+    public coerce(value: string) {
         return value.toLowerCase && value.toLowerCase();
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return params.value.toLowerCase() === params.value;
     }
 
@@ -320,12 +329,12 @@ class LowerCase extends SyncRule {
     }
 }
 
-class UpperCase extends SyncRule {
-    public coerce(value) {
+export class UpperCase extends SyncRule {
+    public coerce(value: string) {
         return value.toUpperCase();
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return params.value.toUpperCase() === params.value;
     }
 
@@ -334,13 +343,13 @@ class UpperCase extends SyncRule {
     }
 }
 
-class Trim extends SyncRule {
+export class Trim extends SyncRule {
 
-    public coerce(value) {
+    public coerce(value: string) {
         return value.trim();
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<string>) {
         return params.value.trim() === params.value;
     }
 
@@ -349,8 +358,8 @@ class Trim extends SyncRule {
     }
 }
 
-class IsoDate extends SyncRule {
-    public validateSync(params) {
+export class IsoDate extends SyncRule {
+    public validateSync(params: IRuleValidationParams<string>) {
         if (!dateRegex.test(params.value)) {
             return false;
         }
@@ -366,25 +375,3 @@ class IsoDate extends SyncRule {
         return 'string.isoDate';
     }
 }
-
-module.exports = [
-    StringValidator,
-    Insensitive,
-    Min,
-    Max,
-    Length,
-    CreditCard,
-    RegEx,
-    AlphaNumeric,
-    Token,
-    Email,
-    IP,
-    URI,
-    GUID,
-    Hex,
-    Hostname,
-    LowerCase,
-    UpperCase,
-    Trim,
-    IsoDate,
-];

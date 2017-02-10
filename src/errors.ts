@@ -1,5 +1,5 @@
 import { ILanguage } from './lang';
-import { Rule } from './types/rule';
+import { Rule, IRuleValidationParams } from './types/rule';
 import { assign, pick } from './util';
 
 /**
@@ -10,6 +10,13 @@ import { assign, pick } from './util';
  * @param {*} value - the object under validation
  * @param {*} info - optional additional info returned from the validation rule
  */
+
+export interface IStackTraceCapturer {
+    captureStackTrace (self: Error): void;
+}
+function isCapturer (errorCtor: any): errorCtor is IStackTraceCapturer {
+    return 'captureStackTrace' in errorCtor;
+}
 
 export class ValidationError extends Error {
     public readonly isJoi: boolean = true; // shh! They'll never find us!
@@ -27,7 +34,7 @@ export class ValidationError extends Error {
         }
     }[];
 
-    constructor (rule: Rule, params, info) {
+    constructor (rule: Rule, params: IRuleValidationParams<any>, info) {
         super();
         const opts = assign({}, params, {
             rule: rule.name(),
@@ -90,7 +97,7 @@ export class ValidationError extends Error {
      * Captures and attaches a stack trace to the error.
      */
     public addStackTrace (): void {
-        if ('captureStackTrace' in Error) {
+        if (isCapturer(Error)) {
             Error.captureStackTrace(this);
         } else {
             this.stack = (new Error()).stack;

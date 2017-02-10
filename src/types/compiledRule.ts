@@ -1,4 +1,6 @@
-import { Rule } from './rule';
+import { Rule, IRuleValidationParams } from './rule';
+
+export type validatorFn = (params: IRuleValidationParams<any>, callback: (error?: Error) => void) => void;
 
 /**
  * The CompiledRule uses a precompiled function (built on the .compile()
@@ -6,7 +8,11 @@ import { Rule } from './rule';
  */
 export abstract class CompiledRule extends Rule {
 
-    public validate: (params, callback) => void;
+    private validateInternal: validatorFn;
+
+    public validate (params: IRuleValidationParams<any>, callback: (error?: Error) => void) {
+        return this.validateInternal(params, callback);
+    }
 
     /**
      * Returns a string for a function that will be called with the same
@@ -19,12 +25,12 @@ export abstract class CompiledRule extends Rule {
      *     }`;
      *   }
      */
-    public getFn() {
+    public getFn(...args: any[]): string {
         throw new Error('not implemented');
     }
 
-    public compile(...args) {
+    public compile(...args: any[]) {
         const fn = this.getFn(...args);
-        this.validate = new Function('params', 'callback', fn); //eslint-disable-line
+        this.validateInternal = <validatorFn>new Function('params', 'callback', fn); //eslint-disable-line
     }
 }

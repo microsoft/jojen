@@ -1,38 +1,38 @@
-import { Rule } from '../types/rule';
+import { Rule, NonOperatingRule, IRuleValidationParams } from '../types/rule';
+import { SyncRule, SingeValRule } from '../types/syncRule';
+import { RuleParams } from '../RuleParams';
+import { Schema } from '../schema';
 
 import { async, clone } from '../util';
 import * as deepEqual from 'deep-equal';
 
 
-class ArrayValidator extends Rule {
-    constructor() {
-        super();
-        this._allowSingle = false;
-        this._allowSparse = false;
-    }
+class ArrayValidator extends SyncRule {
+    public allowSingle = false;
+    public allowSparse = false;
 
     public coerce(value: any) {
-        if (this._allowSingle && !Array.isArray(value)) {
+        if (this.allowSingle && !Array.isArray(value)) {
             return [value];
         }
 
         return undefined;
     }
 
-    public validate(params, callback) {
+    public validateSync(params: IRuleValidationParams<any>) {
         if (!Array.isArray(params.value)) {
-            return callback(this.error(params));
+            return false;
         }
 
-        if (!this._allowSparse) {
+        if (!this.allowSparse) {
             for (let i = 0; i < params.value.length; i++) {
                 if (params.value[i] === undefined) {
-                    return callback(this.error(params, { rule: 'array.sparse' }));
+                    return false;
                 }
             }
         }
 
-        return callback();
+        return true;
     }
 
     public static ruleName() {
@@ -40,10 +40,10 @@ class ArrayValidator extends Rule {
     }
 }
 
-class Sparse extends Rule {
-    public compile(params) {
+export class Sparse extends NonOperatingRule {
+    public compile(params: RuleParams) {
         const allow = params.args[0] === undefined ? true : params.args[0];
-        params.invokeLast(ArrayValidator, (r) => { r._allowSparse = allow; });
+        params.invokeLast(ArrayValidator, r => { r.allowSparse = allow; });
     }
 
     public operates() {
@@ -55,10 +55,10 @@ class Sparse extends Rule {
     }
 }
 
-class Single extends Rule {
-    public compile(params) {
+export class Single extends NonOperatingRule {
+    public compile(params: RuleParams) {
         const allow = params.args[0] === undefined ? true : params.args[0];
-        params.invokeLast(ArrayValidator, (r) => { r._allowSingle = allow; });
+        params.invokeLast(ArrayValidator, r => { r.allowSingle = allow; });
     }
 
     public operates() {
@@ -71,16 +71,17 @@ class Single extends Rule {
 }
 
 class Items extends Rule {
-    public compile(params) {
-        this._schema = params.args[0];
+    private schema: Schema;
+    public compile(params: RuleParams) {
+        this.schema = params.args[0];
     }
 
-    public validate(params, callback) {
+    public validate(params: IRuleValidationParams<any[]>, callback: (error?: Error, data?: any) => void) {
         const todo = params.value.map((item, index) => {
             const options = clone(params.options);
-            options._path = options._path.concat(`[${index}]`);
+            options.path = options.path.concat(`[${index}]`);
 
-            return (done) => params.validator.validate(item, this._schema, options, done);
+            return (done) => params.validator.validate(item, this.schema, options, done);
         });
 
         async.all(todo, callback);
@@ -92,22 +93,23 @@ class Items extends Rule {
 }
 
 class Ordered extends Rule {
-    public compile(params) {
-        this._schemas = params.args;
+    private schemas: Schema[];
+    public compile(params: RuleParams) {
+        this.schemas = params.args;
     }
 
-    public validate(params, callback) {
-        const length = this._schemas.length;
+    public validate(params: IRuleValidationParams<any[]>, callback: (error?: Error, data?: any) => void) {
+        const length = this.schemas.length;
         const expected = params.value.length;
         if (length !== expected) {
             return callback(this.error(params, { length, expected }));
         }
 
-        const todo = this._schemas.map((schema, index) => {
+        const todo = this.schemas.map((schema, index) => {
             const options = clone(params.options);
-            options._path = options._path.concat(`[${index}]`);
+            options.path = options.path.concat(`[${index}]`);
 
-            return (done) => params.validator.validate(params.value[index], schema, options, done);
+            return (done: (error?: Error) => void) => params.validator.validate(params.value[index], schema, options, done);
         });
 
         return async.all(todo, callback);
@@ -118,19 +120,16 @@ class Ordered extends Rule {
     }
 }
 
-class Min extends Rule {
-    public compile(params) {
-        this._val = params.args[0];
-    }
+class Min extends SingeValRule<number> {
 
-    public validate(params, callback) {
+    public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;
-        const min = this._val;
+        const min = this.val;
         if (length < min) {
-            return callback(this.error(params, { length, min }));
+            return  { length, min };
         }
 
-        return callback();
+        return true;
     }
 
     public static ruleName() {
@@ -138,19 +137,15 @@ class Min extends Rule {
     }
 }
 
-class Max extends Rule {
-    public compile(params) {
-        this._val = params.args[0];
-    }
-
-    public validate(params, callback) {
+class Max extends SingeValRule<number> {
+    public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;
-        const max = this._val;
+        const max = this.val;
         if (length > max) {
-            return callback(this.error(params, { length, max }));
+            return { length, max };
         }
 
-        return callback();
+        return true;
     }
 
     public static ruleName() {
@@ -158,19 +153,16 @@ class Max extends Rule {
     }
 }
 
-class Length extends Rule {
-    public compile(params) {
-        this._val = params.args[0];
-    }
+export class Length extends SingeValRule<number> {
 
-    public validate(params, callback) {
+    public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;
-        const expected = this._val;
+        const expected = this.val;
         if (length !== expected) {
-            return callback(this.error(params, { length, expected }));
+            return { length, expected };
         }
 
-        return callback();
+        return true;
     }
 
     public static ruleName() {
@@ -178,30 +170,27 @@ class Length extends Rule {
     }
 }
 
-class Unique extends Rule {
-    public validate(params, callback) {
+export class Unique extends SyncRule {
+    public validateSync(params: IRuleValidationParams<any[]>) {
         const v = params.value;
         const l = v.length;
         for (let i = 0; i < l; i++) {
             for (let k = i + 1; k < l; k++) {
                 if (deepEqual(v[i], v[k])) {
-                    return callback(this.error(params, {
+                    return {
                         violator: {
                             index: k,
                             value: v[k],
                         },
-                    }));
+                    };
                 }
             }
         }
 
-        return callback();
+        return true;
     }
 
     public static ruleName() {
         return 'array.unique';
     }
 }
-
-
-module.exports = [ArrayValidator, Sparse, Single, Items, Ordered, Max, Min, Length, Unique];

@@ -1,4 +1,4 @@
-import { Rule } from '../types/rule';
+import { Rule, NonOperatingRule, IRuleValidationParams } from '../types/rule';
 import { async } from '../util';
 import { RuleParams } from '../RuleParams';
 import { Schema } from '../Schema';
@@ -14,9 +14,9 @@ export class AlternativesValidator extends Rule {
         }
     }
 
-    public validate(params, callback) {
+    public validate(params: IRuleValidationParams<any>, callback: ((error: Error) => void)) {
         const schemaChecks = this.schemas.map(schema =>
-            done => params.validator.validate(params.value, schema, params.options, done)
+            (done: (error: Error) => void) => params.validator.validate(params.value, schema, params.options, done)
         );
 
         async.some(schemaChecks, callback);
@@ -31,7 +31,7 @@ export class AlternativesValidator extends Rule {
     }
 }
 
-export class Try extends Rule {
+export class Try extends NonOperatingRule {
     public operates() {
         return false;
     }

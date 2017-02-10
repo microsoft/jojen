@@ -1,3 +1,5 @@
+import { IRuleValidationParams } from './rule';
+import { Validator, IValidationOptions } from '../validator';
 import { ValidationError } from '../errors';
 import { priority } from '../priority';
 import { RuleParams } from '../RuleParams';
@@ -5,6 +7,13 @@ import * as deepEqual from 'deep-equal';
 
 export interface IRuleCtor<T extends Rule> {
     new (value?: any) : T;
+}
+
+export interface IRuleValidationParams<T> {
+    value: T;
+    validator: Validator;
+    path: string;
+    options: IValidationOptions;
 }
 
 /**
@@ -25,7 +34,7 @@ export abstract class Rule {
     /**
      * Sets the rule parameters for equality checking later.
      */
-    private setParams(...args: any[]) {
+    public setParams(...args: any[]) {
         this.params = args;
     }
 
@@ -66,7 +75,7 @@ export abstract class Rule {
      * @param {Object} [info] additional information about the failure
      * @return {ValidationError}
      */
-    public error (params, info?): ValidationError {
+    public error (params: IRuleValidationParams<any>, info?: {}): ValidationError {
         return new ValidationError(this, params, info);
     }
 
@@ -75,7 +84,7 @@ export abstract class Rule {
      * This should not be overridden.
      */
     public name(): string {
-        return this.constructor.ruleName();
+        return (<typeof Rule>this.constructor).ruleName();
     }
 
     /**
@@ -98,7 +107,13 @@ export abstract class Rule {
     /**
      * Returns the name of the rule, invoked like Jo.name(options...)
      */
-    public static ruleName () {
+    public static ruleName (): string {
         throw new Error('not implemented');
+    }
+}
+
+export class NonOperatingRule extends Rule {
+    public validate(params: Object, cb: (err: ValidationError, value?: any) => void): void {
+        throw new Error('Should never be called');
     }
 }

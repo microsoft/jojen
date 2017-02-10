@@ -1,10 +1,11 @@
-import { Rule } from '../types/rule';
+import { Rule, NonOperatingRule, IRuleCtor, IRuleValidationParams } from '../types/rule';
+import { SyncRule } from '../types/syncRule';
 import { ComparatorRule } from '../types/comparatorRule';
-import priority from '../priority';
+import { priority } from '../priority';
 
 import { RuleParams } from '../RuleParams';
 
-class Any extends Rule {
+export class Any extends NonOperatingRule {
     public operates() {
         return false;
     }
@@ -14,13 +15,13 @@ class Any extends Rule {
     }
 }
 
-class Optional extends Rule {
+export class Optional extends Rule {
     private enabled: boolean;
     public compile() {
         this.enabled = true;
     }
 
-    public validate(params, callback) {
+    public validate(params: IRuleValidationParams<any>, callback: (error?: Error, data?: any) => void) {
         if (this.enabled && params.value === undefined) {
             return callback(undefined, { abort: true });
         }
@@ -42,17 +43,13 @@ class Optional extends Rule {
     }
 }
 
-class Required extends Rule {
+export class Required extends SyncRule {
     public compile(params: RuleParams) {
         params.invokeAll(Optional, rule => rule.disable());
     }
 
-    public validate(params, callback) {
-        if (params.value === undefined) {
-            return callback(this.error(params));
-        }
-
-        return callback();
+    public validateSync(params: IRuleValidationParams<any>) {
+        return params.value !== undefined;
     }
 
     public static ruleName() {
@@ -65,17 +62,17 @@ class Required extends Rule {
  *  - takes a list of values in its arguments
  *  - tries to compact those into a single top-level rule
  */
-class BuiltComparatorRule extends ComparatorRule {
+export abstract class BuiltComparatorRule extends ComparatorRule {
     protected values: any[] = [];
     public compile(params: RuleParams) {
-        let args;
+        let args: any[];
         if (Array.isArray(params.args[0])) {
             args = params.args[0];
         } else {
             args = params.args;
         }
 
-        if (!params.invokeFirst(this.constructor, r => { r.add(args); })) {
+        if (!params.invokeFirst(<IRuleCtor<BuiltComparatorRule>>this.constructor, r => { r.add(args); })) {
             this.values = args;
         }
     }
@@ -84,20 +81,20 @@ class BuiltComparatorRule extends ComparatorRule {
         return !!this.values;
     }
 
-    private add(values) {
+    private add(values: any[]) {
         this.values = this.values.concat(values);
     }
 }
 
-class Valid extends BuiltComparatorRule {
-    public validate(params, callback) {
-        for (let i = 0; i < this._values.length; i++) {
-            if (this.compare(this._values[i], params.value)) {
+export class Valid extends BuiltComparatorRule {
+    public validate(params: IRuleValidationParams<any>, callback: (error?: Error, data?: any) => void) {
+        for (let i = 0; i < this.values.length; i++) {
+            if (this.compare(this.values[i], params.value)) {
                 return callback(undefined, { abort: true });
             }
         }
 
-        return callback(this.error(params, { allowed: this._values }));
+        return callback(this.error(params, { allowed: this.values }));
     }
 
     public priority() {
@@ -109,10 +106,10 @@ class Valid extends BuiltComparatorRule {
     }
 }
 
-class Invalid extends BuiltComparatorRule {
-    public validate(params, callback) {
-        for (let i = 0; i < this._values.length; i++) {
-            if (this.compare(this._values[i], params.value)) {
+export class Invalid extends BuiltComparatorRule {
+    public validate(params: IRuleValidationParams<any>, callback: (error?: Error, data?: any) => void) {
+        for (let i = 0; i < this.values.length; i++) {
+            if (this.compare(this.values[i], params.value)) {
                 return callback(this.error(params, {
                     value: params.value,
                 }));
@@ -127,13 +124,9 @@ class Invalid extends BuiltComparatorRule {
     }
 }
 
-class Forbidden extends Rule {
-    public validate(params, callback) {
-        if (params.value !== undefined) {
-            return callback(this.error(params));
-        }
-
-        return callback();
+export class Forbidden extends SyncRule {
+    public validateSync(params: IRuleValidationParams<any>) {
+        return params.value === undefined;
     }
 
     public static ruleName() {
@@ -141,10 +134,10 @@ class Forbidden extends Rule {
     }
 }
 
-class Allow extends BuiltComparatorRule {
-    public validate(params, callback) {
-        for (let i = 0; i < this._values.length; i++) {
-            if (this.compare(this._values[i], params.value)) {
+export class Allow extends BuiltComparatorRule {
+    public validate(params: IRuleValidationParams<any>, callback: (error?: Error, data?: any) => void) {
+        for (let i = 0; i < this.values.length; i++) {
+            if (this.compare(this.values[i], params.value)) {
                 return callback(undefined, { abort: true });
             }
         }
@@ -161,14 +154,15 @@ class Allow extends BuiltComparatorRule {
     }
 }
 
-class Custom extends Rule {
-    public compile(params) {
-        this._func = params.args[0];
+export class Custom extends Rule {
+    private func: (value: any, cb: (error: Error) => void) => void;
+    public compile(params: RuleParams) {
+        this.func = params.args[0];
     }
 
-    public validate(params, callback) {
+    public validate(params: IRuleValidationParams<any>, callback: (error?: Error, data?: any) => void) {
         try {
-            this._func(params.value, error => {
+            this.func(params.value, error => {
                 if (error) { // error is equivalent to details
                     return callback(this.error(params, error));
                 }
@@ -186,9 +180,10 @@ class Custom extends Rule {
     }
 }
 
-class Default extends Rule {
+export class Default extends NonOperatingRule {
+    public default: any;
     public compile(params: RuleParams) {
-        this._default = params.args[0];
+        this.default = params.args[0];
     }
 
     public priority() {
@@ -199,6 +194,3 @@ class Default extends Rule {
         return 'default';
     }
 }
-
-
-module.exports = [Any, Required, Valid, Invalid, Optional, Forbidden, Allow, Custom, Default];

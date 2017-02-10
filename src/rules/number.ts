@@ -1,16 +1,18 @@
-import SyncRule from '../types/syncRule';
+import { IRuleValidationParams } from '../types/rule';
+import { SyncRule } from '../types/syncRule';
+import { RuleParams } from '../RuleParams';
 
-class SingleArgumentBase extends SyncRule {
+export abstract class SingleArgumentBase extends SyncRule {
     protected val: number;
 
-    public compile(params) {
+    public compile(params: RuleParams) {
         this.val = params.args[0];
     }
 }
 
-class NumberValidator extends SyncRule {
+export class NumberValidator extends SyncRule {
 
-    public coerce(value) {
+    public coerce(value: any) {
         if (typeof value !== 'string') {
             return undefined;
         }
@@ -19,7 +21,7 @@ class NumberValidator extends SyncRule {
         return Number.isNaN(parsed) ? undefined : parsed;
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<any>) {
         return typeof params.value === 'number' &&
         !Number.isNaN(params.value) &&
         Number.isFinite(params.value);
@@ -30,9 +32,9 @@ class NumberValidator extends SyncRule {
     }
 }
 
-class Integer extends SyncRule {
+export class Integer extends SyncRule {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return Number.isInteger(params.value);
     }
 
@@ -41,10 +43,10 @@ class Integer extends SyncRule {
     }
 }
 
-class Min extends SingleArgumentBase {
+export class Min extends SingleArgumentBase {
 
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return params.value >= this.val || {
             min: this.val,
         };
@@ -55,9 +57,9 @@ class Min extends SingleArgumentBase {
     }
 }
 
-class Max extends SingleArgumentBase {
+export class Max extends SingleArgumentBase {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return params.value <= this.val || {
             max: this.val,
         };
@@ -68,9 +70,9 @@ class Max extends SingleArgumentBase {
     }
 }
 
-class Greater extends SingleArgumentBase {
+export class Greater extends SingleArgumentBase {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return params.value > this.val || {
             greater: this.val,
         };
@@ -81,9 +83,9 @@ class Greater extends SingleArgumentBase {
     }
 }
 
-class Less extends SingleArgumentBase {
+export class Less extends SingleArgumentBase {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return params.value < this.val || {
             less: this.val,
         };
@@ -94,9 +96,9 @@ class Less extends SingleArgumentBase {
     }
 }
 
-class Negative extends SyncRule {
+export class Negative extends SyncRule {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return params.value < 0;
     }
 
@@ -105,9 +107,9 @@ class Negative extends SyncRule {
     }
 }
 
-class Positive extends SyncRule {
+export class Positive extends SyncRule {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return params.value > 0;
     }
 
@@ -116,9 +118,9 @@ class Positive extends SyncRule {
     }
 }
 
-class Multiple extends SingleArgumentBase {
+export class Multiple extends SingleArgumentBase {
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         return params.value % this.val === 0 || {
             multiple: this.val,
         };
@@ -131,13 +133,13 @@ class Multiple extends SingleArgumentBase {
 
 const precisionRegEx = /^-?\d+(\.\d+)?$/;
 
-class Precision extends SingleArgumentBase {
+export class Precision extends SingleArgumentBase {
 
-    public coerce(value) {
+    public coerce(value: number) {
         return parseFloat(value.toFixed(this.val));
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<number>) {
         const match = params.value.toString().match(precisionRegEx);
         if (!match || !match[1]) {
             return true;
@@ -154,16 +156,3 @@ class Precision extends SingleArgumentBase {
         return 'number.precision';
     }
 }
-
-module.exports = [
-    NumberValidator,
-    Integer,
-    Min,
-    Max,
-    Greater,
-    Less,
-    Negative,
-    Positive,
-    Multiple,
-    Precision,
-];

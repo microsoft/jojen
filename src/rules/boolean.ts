@@ -1,9 +1,10 @@
-import SyncRule from '../types/syncRule';
+import { IRuleValidationParams } from '../types/rule';
+import { SyncRule } from '../types/syncRule';
 
 /**
  * Intentionally does not coerce strings like joi.
  */
-class BooleanValidator extends SyncRule {
+export class BooleanValidator extends SyncRule {
 
     public coerce (value: any): boolean {
         if (value === 'true' || Number(value) === 1) {
@@ -15,7 +16,7 @@ class BooleanValidator extends SyncRule {
         return undefined;
     }
 
-    public validateSync(params) {
+    public validateSync(params: IRuleValidationParams<any>) {
         return typeof params.value === 'boolean';
     }
 
@@ -23,5 +24,3 @@ class BooleanValidator extends SyncRule {
         return 'boolean';
     }
 }
-
-module.exports = [BooleanValidator];

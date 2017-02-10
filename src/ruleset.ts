@@ -1,6 +1,6 @@
 import { Schema } from './Schema';
-import Rule from './types/rule';
-import Validator from './validator';
+import { Rule} from './types/rule';
+import { Validator } from './validator';
 
 /**
  * The Ruleset is an object used for collecting and building sets of validation

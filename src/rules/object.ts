@@ -1,8 +1,8 @@
-import Rule from '../types/rule';
+import { Rule, NonOperatingRule, IRuleValidationParams } from '../types/rule';
 import { async, clone, assign } from '../util';
+import { RuleParams } from '../RuleParams';
 
-
-class ObjectValidator extends Rule {
+export class ObjectValidator extends NonOperatingRule {
     public operates() {
         return false;
     }
@@ -12,23 +12,26 @@ class ObjectValidator extends Rule {
     }
 }
 
-class Keys extends Rule {
-    public compile(params) {
-        const found = params.invokeFirst(this.constructor, rule => {
-            rule._obj = assign({}, rule._obj, params.args[0]);
-            rule._keys = rule._keys.concat(Object.keys(params.args[0]));
+export class Keys extends Rule {
+    private obj: {};
+    private keys: string[];
+    public allowUnknown: boolean;
+    public compile(params: RuleParams) {
+        const found = params.invokeFirst(<typeof Keys>this.constructor, rule => {
+            rule.obj = assign({}, rule.obj, params.args[0]);
+            rule.keys = rule.keys.concat(Object.keys(params.args[0]));
         });
         if (found) {
             return;
         }
-        this._obj = params.args[0];
-        this._keys = Object.keys(params.args[0]);
+        this.obj = params.args[0];
+        this.keys = Object.keys(params.args[0]);
         // If an Unknown rule is added later, it'll set this to true
-        this._allowUnknown = false;
+        this.allowUnknown = false;
     }
 
     public operates() {
-        return !!this._keys;
+        return !!this.keys;
     }
 
     /**
@@ -38,10 +41,10 @@ class Keys extends Rule {
      * @param  {Function} callback
      * @return {Boolean}
      */
-    public _validateUnknown(params, callback) {
+    private validateUnknown(params: IRuleValidationParams<{}>, callback: (error: Error) => void) {
         const keys = Object.keys(params.value);
         for (let i = 0; i < keys.length; i++) {
-            if (this._keys.indexOf(keys[i]) === -1) {
+            if (this.keys.indexOf(keys[i]) === -1) {
                 callback(this.error(params, { extra: keys[i], rule: 'object.unknown' }));
                 return true;
             }
@@ -50,26 +53,26 @@ class Keys extends Rule {
         return false;
     }
 
-    public validate(params, callback) {
+    public validate(params: IRuleValidationParams<{}>, callback: (error?: Error) => void) {
         const value = params.value;
         if (value === undefined || value === null) {
             return callback(this.error(params));
         }
 
-        if (!this._allowUnknown && this._validateUnknown(params, callback)) {
+        if (!this.allowUnknown && this.validateUnknown(params, callback)) {
             return undefined;
         }
 
-        const todo = this._keys.map((key) => {
+        const todo = this.keys.map((key) => {
             const options = clone(params.options);
-            options._path = options._path.concat(key);
+            options.path = options.path.concat(key);
 
-            return (done) => {
+            return (done: (error?: Error) => void) => {
                 params.validator.validate(
                     value[key],
-                    this._obj[key],
+                    this.obj[key],
                     options,
-                    (err, converted) => {
+                    (err: Error, converted: boolean) => {
                         if (err) {
                             return done(err);
                         }
@@ -92,10 +95,10 @@ class Keys extends Rule {
     }
 }
 
-class Unknown extends Rule {
-    public compile(params): void {
+export class Unknown extends NonOperatingRule {
+    public compile(params: RuleParams): void {
         const allow = params.args[0] === undefined ? true : params.args[0];
-        params.invokeLast(Keys, r => { r._allowUnknown = allow; });
+        params.invokeLast(Keys, r => { r.allowUnknown = allow; });
     }
 
     public operates(): boolean {
@@ -106,5 +109,3 @@ class Unknown extends Rule {
         return 'object.unknown';
     }
 }
-
-module.exports = [ObjectValidator, Keys, Unknown];

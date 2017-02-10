@@ -1,6 +1,7 @@
 import { Rule } from './types/rule';
 import RuleSet from './ruleset';
 import { RuleParams } from './RuleParams';
+import { IRuleCtor } from './types/rule';
 
 /**
  * The Schema is an immutable object used for building definitions
@@ -37,7 +38,7 @@ export class Schema {
         }
 
         const rule = new ctor();
-        rule._setParams(...args);
+        rule.setParams(...args);
 
         return list.concat(rule);
     }
@@ -51,7 +52,7 @@ export class Schema {
         // Stable sort the rules so that higher-priority rules come first.
         // We implement this as a stable sort by comparing equal-priority
         // rules by their position.
-        const rules = this._generators.reduce((list, gen) => gen(list), []);
+        const rules = this.generators.reduce((list, gen) => gen(list), <Rule[]>[]);
 
         rules.sort((a, b) => {
             const priority = a.priority() - b.priority();
