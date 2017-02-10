@@ -1,9 +1,13 @@
-import { Rule, NonOperatingRule, IRuleCtor, IRuleValidationParams } from '../types/rule';
-import { SyncRule } from '../types/syncRule';
-import { ComparatorRule } from '../types/comparatorRule';
 import { priority } from '../priority';
-
 import { RuleParams } from '../RuleParams';
+import { ComparatorRule } from '../types/comparatorRule';
+import {
+    IRuleCtor,
+    IRuleValidationParams,
+    NonOperatingRule,
+    Rule,
+} from '../types/rule';
+import { SyncRule } from '../types/syncRule';
 
 export class Any extends NonOperatingRule {
     public operates() {
@@ -37,8 +41,7 @@ export class Optional extends Rule {
         return priority.halter;
     }
 
-
-    public static ruleName() {
+    public static ruleName(): string {
         return 'optional';
     }
 }
@@ -81,7 +84,7 @@ export abstract class BuiltComparatorRule extends ComparatorRule {
         return !!this.values;
     }
 
-    private add(values: any[]) {
+    public add (values: any[]) { // TODO: Actually private.
         this.values = this.values.concat(values);
     }
 }

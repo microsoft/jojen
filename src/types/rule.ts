@@ -1,9 +1,10 @@
-import { IRuleValidationParams } from './rule';
-import { Validator, IValidationOptions } from '../validator';
+import * as deepEqual from 'deep-equal';
+
 import { ValidationError } from '../errors';
 import { priority } from '../priority';
 import { RuleParams } from '../RuleParams';
-import * as deepEqual from 'deep-equal';
+import { IValidationOptions, Validator } from '../validator';
+import { IRuleValidationParams } from './rule';
 
 export interface IRuleCtor<T extends Rule> {
     new (value?: any) : T;
@@ -27,7 +28,7 @@ export abstract class Rule {
      * example, `.rule(1, 2)` will cause this to be invoked with the
      * arguments `1, 2`.
      */
-    public compile(params: RuleParams) {
+    public compile(_params: RuleParams) {
         return;
     }
 
@@ -65,7 +66,7 @@ export abstract class Rule {
      * Returning undefined from this function signals that no coercion
      * took place.
      */
-    public coerce(val: any): any {
+    public coerce(_val: any): any {
         return undefined;
     }
 
@@ -113,7 +114,7 @@ export abstract class Rule {
 }
 
 export class NonOperatingRule extends Rule {
-    public validate(params: Object, cb: (err: ValidationError, value?: any) => void): void {
+    public validate(_params: Object, _cb: (err: ValidationError, value?: any) => void): void {
         throw new Error('Should never be called');
     }
 }

@@ -29,7 +29,7 @@ import { Validator } from './validator';
  * If there are conflicting names, the deeper children will always override
  * the shallower (less specific) children.
  */
-export default class Ruleset {
+export class Ruleset {
     private node: Rule = null;
     private children: { [prop: string]: Rule } = {};
     constructor(private parent: Ruleset = null) {

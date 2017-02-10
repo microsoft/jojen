@@ -1,6 +1,6 @@
-import { Rule } from './types/rule';
-import RuleSet from './ruleset';
 import { RuleParams } from './RuleParams';
+import { RuleSet } from './Ruleset';
+import { Rule } from './types/rule';
 import { IRuleCtor } from './types/rule';
 
 /**
@@ -16,8 +16,8 @@ export class Schema {
 
     constructor (ruleset: RuleSet, private generators: ((list: Rule[]) => Rule[])[] = []) {
         ruleset.buildChain(this, (method, child, args) => {
-            const Node = child.node();
-            const newGens = generators.concat([(list) => this.build(Node, args, list)]);
+            const node = child.node();
+            const newGens = generators.concat([(list) => this.build(node, args, list)]);
             return new Schema(child, newGens);
         });
     }

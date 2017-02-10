@@ -4,7 +4,6 @@
     "node_modules/tslint-microsoft-contrib"
   ],
   "rules": {
-    "no-constructor-vars": false,
     "no-relative-imports": false,
     "mocha-no-side-effect-code": false,
     "missing-jsdoc": false,
@@ -17,11 +16,12 @@
     "function-name": [true, {
       "method-regex": "^[a-z][\\w\\d]+$",
       "private-method-regex": "^[a-z][\\w\\d]+$",
-      "static-method-regex": "^[A-Z][\\w\\d]+$",
+      "static-method-regex": "^[a-z][\\w\\d]+$",
       "function-regex": "^[a-z][\\w\\d]+$"
     }],
     "restrict-plus-operands": false,
     "no-increment-decrement": false,
-    "no-reserved-keywords": false
+    "no-reserved-keywords": false,
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
   }
 }

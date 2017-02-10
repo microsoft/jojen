@@ -1,5 +1,4 @@
-import Validator from './validator';
-import { ILanguage } from './lang';
+import { Validator } from './validator';
 
 export default function () {
     return new Validator();

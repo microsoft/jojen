@@ -1,11 +1,14 @@
-import { Rule, NonOperatingRule, IRuleValidationParams } from '../types/rule';
-import { SyncRule, SingeValRule } from '../types/syncRule';
-import { RuleParams } from '../RuleParams';
-import { Schema } from '../schema';
-
-import { async, clone } from '../util';
 import * as deepEqual from 'deep-equal';
 
+import { RuleParams } from '../RuleParams';
+import { Schema } from '../Schema';
+import {
+    IRuleValidationParams,
+    NonOperatingRule,
+    Rule,
+} from '../types/rule';
+import { SingeValRule, SyncRule } from '../types/syncRule';
+import { async, clone } from '../util';
 
 class ArrayValidator extends SyncRule {
     public allowSingle = false;
@@ -70,7 +73,7 @@ export class Single extends NonOperatingRule {
     }
 }
 
-class Items extends Rule {
+export class Items extends Rule {
     private schema: Schema;
     public compile(params: RuleParams) {
         this.schema = params.args[0];
@@ -81,7 +84,7 @@ class Items extends Rule {
             const options = clone(params.options);
             options.path = options.path.concat(`[${index}]`);
 
-            return (done) => params.validator.validate(item, this.schema, options, done);
+            return (done: (error?: Error, data?: any) => void) => params.validator.validate(item, this.schema, options, done);
         });
 
         async.all(todo, callback);
@@ -92,7 +95,7 @@ class Items extends Rule {
     }
 }
 
-class Ordered extends Rule {
+export class Ordered extends Rule {
     private schemas: Schema[];
     public compile(params: RuleParams) {
         this.schemas = params.args;
@@ -120,7 +123,7 @@ class Ordered extends Rule {
     }
 }
 
-class Min extends SingeValRule<number> {
+export class Min extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;
@@ -137,7 +140,7 @@ class Min extends SingeValRule<number> {
     }
 }
 
-class Max extends SingeValRule<number> {
+export class Max extends SingeValRule<number> {
     public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;
         const max = this.val;

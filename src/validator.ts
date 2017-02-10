@@ -1,12 +1,10 @@
-import Ruleset from './ruleset';
-import { Schema } from './schema';
-import { Rule } from './types/rule';
-import * as languages from './lang';
 import { ILanguage } from './lang';
+import { defaultRules } from './rules';
 import { Default } from './rules/any';
-
+import { Ruleset } from './ruleset';
+import { Schema } from './Schema';
+import { Rule } from './types/rule';
 import { assign } from './util';
-import defaultRules from './rules';
 
 const defaultOptions = Object.freeze({
     captureStack: false,
@@ -51,7 +49,7 @@ export class Validator {
 
         this.schema = new Schema(this.ruleset).optional();
         this.ruleset.buildChain(this, (method, child, ...args) =>
-            this.schema[method](...args)
+            this.schema[method](...args),
         );
 
         return this;
@@ -128,7 +126,7 @@ export class Validator {
                     }
 
                     run(v, rules.slice(1));
-                }
+                },
             );
         };
 
@@ -168,7 +166,6 @@ export class Validator {
             value: retVal,
         };
     }
-
 
     /**
      * Validates the give value against the schema.

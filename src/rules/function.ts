@@ -1,8 +1,8 @@
+import { RuleParams } from '../RuleParams';
 import { IRuleValidationParams } from '../types/rule';
 import { SyncRule } from '../types/syncRule';
-import { RuleParams } from '../RuleParams';
 
-class FunctionValidator extends SyncRule {
+export class FunctionValidator extends SyncRule {
 
     public validateSync(params: IRuleValidationParams<any>) {
         return typeof params.value === 'function';

@@ -1,4 +1,4 @@
-const modules = [
+/*const modules = [
     require('./any'),
     require('./array'),
     require('./object'),
@@ -9,4 +9,6 @@ const modules = [
     require('./alternatives'),
 ];
 
-export default modules.reduce((rules, set) => rules.concat(set), []);
+export default modules.reduce((rules, set) => rules.concat(set), []);*/
+
+export const defaultRules = {};

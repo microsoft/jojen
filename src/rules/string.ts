@@ -1,12 +1,14 @@
-import { ComparatorRule } from '../types/comparatorRule';
-import { Rule, NonOperatingRule, IRuleValidationParams, IRuleCtor } from '../types/rule';
-import { SyncRule } from '../types/syncRule';
-import { RuleParams } from '../RuleParams';
-
-
-import * as isURL from 'validator/lib/isURL';
-import * as isCreditCard from 'validator/lib/isCreditCard';
 import url from 'url';
+import * as isCreditCard from 'validator/lib/isCreditCard';
+import * as isURL from 'validator/lib/isURL';
+
+import { RuleParams } from '../RuleParams';
+import { ComparatorRule } from '../types/comparatorRule';
+import {
+    IRuleValidationParams,
+    NonOperatingRule,
+} from '../types/rule';
+import { SyncRule } from '../types/syncRule';
 import { escapeRegExp } from '../util';
 
 /* tslint:disable */
@@ -102,7 +104,7 @@ export class Length extends SingleArgumentBase {
     }
 }
 
-class CreditCard extends SyncRule {
+export class CreditCard extends SyncRule {
     public validateSync(params: IRuleValidationParams<string>) {
         return isCreditCard(params.value);
     }
@@ -173,7 +175,7 @@ export type IPVersion = 'ipv4' | 'ipv6';
 
 export class IP extends SyncRule {
     private matches = [ipv4Regex, ipv6RegEx];
-    private cidr: 'forbidden' | 'required' | 'optional' = 'forbidden';
+    //'forbidden' | 'required' | 'optional'; for options.
     private versions: IPVersion[] = ['ipv4', 'ipv6'];
     private cidrAllowed = false;
     private cidrRequired = false;
@@ -226,7 +228,7 @@ export class IP extends SyncRule {
         }
         return {
             reason,
-        }
+        };
     }
 
     public static ruleName() {

@@ -1,4 +1,4 @@
-import { Rule, IRuleValidationParams } from './rule';
+import { IRuleValidationParams, Rule } from './rule';
 
 export type validatorFn = (params: IRuleValidationParams<any>, callback: (error?: Error) => void) => void;
 
@@ -25,12 +25,13 @@ export abstract class CompiledRule extends Rule {
      *     }`;
      *   }
      */
-    public getFn(...args: any[]): string {
+    public getFn(..._args: any[]): string {
         throw new Error('not implemented');
     }
 
     public compile(...args: any[]) {
         const fn = this.getFn(...args);
-        this.validateInternal = <validatorFn>new Function('params', 'callback', fn); //eslint-disable-line
+        // tslint:disable-next-line no-function-constructor-with-string-args
+        this.validateInternal = <validatorFn>new Function('params', 'callback', fn);
     }
 }

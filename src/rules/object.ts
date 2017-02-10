@@ -1,6 +1,14 @@
-import { Rule, NonOperatingRule, IRuleValidationParams } from '../types/rule';
-import { async, clone, assign } from '../util';
 import { RuleParams } from '../RuleParams';
+import {
+    IRuleValidationParams,
+    NonOperatingRule,
+    Rule,
+} from '../types/rule';
+import {
+    assign,
+    async,
+    clone,
+} from '../util';
 
 export class ObjectValidator extends NonOperatingRule {
     public operates() {
@@ -82,7 +90,7 @@ export class Keys extends Rule {
                         }
 
                         return done();
-                    }
+                    },
                 );
             };
         });

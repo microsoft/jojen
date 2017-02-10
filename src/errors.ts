@@ -1,5 +1,5 @@
 import { ILanguage } from './lang';
-import { Rule, IRuleValidationParams } from './types/rule';
+import { IRuleValidationParams, Rule } from './types/rule';
 import { assign, pick } from './util';
 
 /**
@@ -34,7 +34,7 @@ export class ValidationError extends Error {
         }
     }[];
 
-    constructor (rule: Rule, params: IRuleValidationParams<any>, info) {
+    constructor (rule: Rule, params: IRuleValidationParams<any>, info: any) {
         super();
         const opts = assign({}, params, {
             rule: rule.name(),

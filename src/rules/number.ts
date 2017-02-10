@@ -1,6 +1,6 @@
+import { RuleParams } from '../RuleParams';
 import { IRuleValidationParams } from '../types/rule';
 import { SyncRule } from '../types/syncRule';
-import { RuleParams } from '../RuleParams';
 
 export abstract class SingleArgumentBase extends SyncRule {
     protected val: number;
@@ -44,7 +44,6 @@ export class Integer extends SyncRule {
 }
 
 export class Min extends SingleArgumentBase {
-
 
     public validateSync(params: IRuleValidationParams<number>) {
         return params.value >= this.val || {

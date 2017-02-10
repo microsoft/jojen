@@ -1,5 +1,5 @@
-import { Rule, IRuleValidationParams} from './rule';
 import { RuleParams } from '../RuleParams';
+import { IRuleValidationParams, Rule } from './rule';
 
 /**
  * Helper rule that handles callback calling for synchronous validation rules.

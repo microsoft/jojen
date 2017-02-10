@@ -7,7 +7,7 @@ export class RuleParams {
     private index: number;
     public readonly args: any[];
 
-    constructor(private rule: Rule, private rules: Rule[]) {
+    constructor(rule: Rule, private rules: Rule[]) {
         this.index = rules.indexOf(rule);
         this.args = rule.params;
     }
