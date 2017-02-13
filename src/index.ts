@@ -1,27 +1,25 @@
-import { Validator } from './validator';
-
-export default function () {
-    return new Validator();
-}
-
 import { english } from './lang/en';
+import { Schema } from './Schema';
+import { ILanguagePack, IValidationOptions, IValidationResult, Validator } from './validator';
 
+export interface IGlobalJo {
+    (): Validator;
+    validate(value: any, schema: Schema, options: IValidationOptions, callback: (err: Error, val?: any) => void): void;
+    validateSync<T>(value: T, schema: Schema, options?: IValidationOptions): IValidationResult<T>;
+    assert<T>(value: any, schema: Schema, message: string | Error): T;
+    load(language: ILanguagePack): this;
+}
 
 // Default validator for Joi compatibility, so we can call methods like
 // Jo.any(). More advanced users will want to subclass this.
 const defaultValidator = new Validator();
 defaultValidator.load(english);
 
-Object
-    .keys(defaultValidator)
-    .concat(['validate', 'load', 'assert', 'validateSync'])
-    .forEach((key) => {
-        const prop = defaultValidator[key];
-        if (key[0] === '_') {
-            return; // don't export private things
-        } else if (typeof prop === 'function') {
-            Jo[key] = prop.bind(defaultValidator);
-        } else {
-            Jo[key] = prop;
-        }
-    });
+export const jo: IGlobalJo = <any>(() => new Validator());
+jo.validate = defaultValidator.validate.bind(defaultValidator);
+jo.validateSync = defaultValidator.validateSync.bind(defaultValidator);
+jo.assert = defaultValidator.assert.bind(defaultValidator);
+jo.load = defaultValidator.load.bind(defaultValidator);
+
+// TODO: Handle the other stuff
+

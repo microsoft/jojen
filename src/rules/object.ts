@@ -5,14 +5,17 @@ import {
     Rule,
 } from '../types/rule';
 import {
+    SyncRule,
+} from '../types/syncRule';
+import {
     assign,
     async,
     clone,
 } from '../util';
 
-export class ObjectValidator extends NonOperatingRule {
-    public operates() {
-        return false;
+export class ObjectValidator extends SyncRule {
+    public validateSync(params: IRuleValidationParams<{}>) {
+        return params.value && typeof params.value === 'object';
     }
 
     public static ruleName() {
@@ -21,7 +24,7 @@ export class ObjectValidator extends NonOperatingRule {
 }
 
 export class Keys extends Rule {
-    private obj: {};
+    private obj: { [key: string]: any };
     private keys: string[];
     public allowUnknown: boolean;
     public compile(params: RuleParams) {
@@ -61,7 +64,7 @@ export class Keys extends Rule {
         return false;
     }
 
-    public validate(params: IRuleValidationParams<{}>, callback: (error?: Error) => void) {
+    public validate(params: IRuleValidationParams<{ [key: string]: any }>, callback: (error?: Error) => void) {
         const value = params.value;
         if (value === undefined || value === null) {
             return callback(this.error(params));

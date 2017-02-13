@@ -123,7 +123,7 @@ export class Ordered extends Rule {
     }
 }
 
-export class Min extends SingeValRule<number> {
+export class MinItems extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;
@@ -140,7 +140,7 @@ export class Min extends SingeValRule<number> {
     }
 }
 
-export class Max extends SingeValRule<number> {
+export class MaxItems extends SingeValRule<number> {
     public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;
         const max = this.val;
@@ -156,7 +156,7 @@ export class Max extends SingeValRule<number> {
     }
 }
 
-export class Length extends SingeValRule<number> {
+export class LengthExact extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<any[]>) {
         const length = params.value.length;

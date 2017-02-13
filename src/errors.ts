@@ -1,6 +1,6 @@
-import { ILanguage } from './lang';
 import { IRuleValidationParams, Rule } from './types/rule';
 import { assign, pick } from './util';
+import { ILanguagePack } from './validator';
 
 /**
  * Object passed to language definitions to spit out a pretty message.
@@ -34,16 +34,22 @@ export class ValidationError extends Error {
         }
     }[];
 
-    constructor (rule: Rule, params: IRuleValidationParams<any>, info: any) {
+    constructor (rule: Rule, params: IRuleValidationParams<any>, info: {}) {
         super();
-        const opts = assign({}, params, {
-            rule: rule.name(),
-            ruleParams: rule.params,
-        }, info);
-        const key = opts.path[opts.path.length - 1];
+        const key = params.path[params.path.length - 1];
+        const opts = assign(
+            {
+                key,
+            },
+            params,
+            {
+                rule: rule.name(),
+                ruleParams: rule.params,
+            },
+            info,
+        );
 
         this.opts = opts;
-        this.opts.key = key;
 
         this.details = [{
             path: opts.path.join('.'),
@@ -57,7 +63,7 @@ export class ValidationError extends Error {
      * order to fill out its details.
      * @param  {Object} language
      */
-    public attach (language: ILanguage) {
+    public attach (language: ILanguagePack) {
         if (!language) {
             return;
         }

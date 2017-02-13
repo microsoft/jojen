@@ -75,7 +75,7 @@ export abstract class BuiltComparatorRule extends ComparatorRule {
             args = params.args;
         }
 
-        if (!params.invokeFirst(<IRuleCtor<BuiltComparatorRule>>this.constructor, r => { r.add(args); })) {
+        if (!params.invokeFirst(<IRuleCtor<BuiltComparatorRule>><any>this.constructor, r => { r.add(args); })) {
             this.values = args;
         }
     }
@@ -84,7 +84,7 @@ export abstract class BuiltComparatorRule extends ComparatorRule {
         return !!this.values;
     }
 
-    public add (values: any[]) { // TODO: Actually private.
+    public add (values: any[]): void { // TODO: Actually private.
         this.values = this.values.concat(values);
     }
 }

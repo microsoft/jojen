@@ -1,5 +1,5 @@
 import { Schema } from './Schema';
-import { Rule} from './types/rule';
+import { IRuleCtor, Rule } from './types/rule';
 import { Validator } from './validator';
 
 /**
@@ -30,22 +30,22 @@ import { Validator } from './validator';
  * the shallower (less specific) children.
  */
 export class Ruleset {
-    private node: Rule = null;
-    private children: { [prop: string]: Rule } = {};
+    private node: IRuleCtor<Rule>;
+    private children: { [prop: string]: Ruleset } = {};
     constructor(private parent: Ruleset = null) {
     }
 
     /**
      * Returns the node of this ruleset: a Rule, or null.
      */
-    public getNode (): Rule {
+    public getNode (): IRuleCtor<Rule> {
         return this.node;
     }
 
     /**
      * Adds a new rule to the ruleset.
      */
-    public addRule(path: string[], rule: Rule) {
+    public addRule(path: string[], rule: IRuleCtor<Rule>) {
         if (path.length === 0) {
             this.node = rule;
             return;
@@ -67,7 +67,7 @@ export class Ruleset {
      *                       be the returned value from the built function.
      * @return {Object}
      */
-    public buildChain (obj: Validator | Schema, fn: (key: string, child: Rule, ...args: any[]) => Schema) {
+    public buildChain (obj: Validator | Schema, fn: (key: string, child: Ruleset, ...args: any[]) => Schema) {
         if (this.parent) {
             this.parent.buildChain(obj, fn);
         }

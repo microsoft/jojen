@@ -8,7 +8,7 @@ import {
     IRuleValidationParams,
     NonOperatingRule,
 } from '../types/rule';
-import { SyncRule } from '../types/syncRule';
+import { SingeValRule, SyncRule } from '../types/syncRule';
 import { escapeRegExp } from '../util';
 
 /* tslint:disable */
@@ -54,15 +54,7 @@ export class Insensitive extends NonOperatingRule {
     }
 }
 
-export abstract class SingleArgumentBase extends SyncRule {
-    protected val: number;
-
-    public compile(params: RuleParams) {
-        this.val = params.args[0];
-    }
-}
-
-export class Min extends SingleArgumentBase {
+export class MinLength extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<string>) {
         return params.value.length >= this.val || {
@@ -76,7 +68,7 @@ export class Min extends SingleArgumentBase {
     }
 }
 
-export class Max extends SingleArgumentBase {
+export class MaxLength extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<string>) {
         return params.value.length <= this.val || {
@@ -90,7 +82,7 @@ export class Max extends SingleArgumentBase {
     }
 }
 
-export class Length extends SingleArgumentBase {
+export class Length extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<string>) {
         return params.value.length === this.val || {

@@ -66,14 +66,18 @@ export const async = {
 /**
  * Similar to Object.assign, but stricter and about 4x faster.
  */
-export function assign<T>(target: T, ...args: T[]): T {
+export function assign<T, U>(target: T, source: U): T & U;
+export function assign<T, U, V>(target: T, source1: U, source2: V): T & U & V;
+export function assign<T, U, V, W>(target: T, source1: U, source2: V, source3: W): T & U & V & W;
+export function assign(target: any, ...args: any[]): any {
     for (let i = 0; i < args.length; i++) {
-        const arg = arguments[i];
+        const arg = args[i];
         if (!arg) {
             continue;
         }
 
-        for (let k = 0, keys = Object.keys(arg); k < keys.length; k++) {
+        const keys = Object.keys(arg);
+        for (let k = 0; k < keys.length; k++) {
             target[keys[k]] = arg[keys[k]];
         }
     }
@@ -84,7 +88,7 @@ export function assign<T>(target: T, ...args: T[]): T {
 /**
  * Returns a subset of attributes from the object.
  */
-export function pick<T>(obj: T, attrs: string[]): T {
+export function pick<T>(obj: T, attrs: (keyof T)[]): T {
     const out: T = <T>{};
     for (let i = 0; i < attrs.length; i++) {
         out[attrs[i]] = obj[attrs[i]];

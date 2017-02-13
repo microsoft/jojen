@@ -6,15 +6,17 @@ import { RuleParams } from '../RuleParams';
 import { IValidationOptions, Validator } from '../validator';
 import { IRuleValidationParams } from './rule';
 
-export interface IRuleCtor<T extends Rule> {
+export interface IRuleCtor<T extends Rule> extends Function {
     new (value?: any) : T;
+    ruleName(): string;
 }
 
 export interface IRuleValidationParams<T> {
     value: T;
     validator: Validator;
-    path: string;
+    path: string[];
     options: IValidationOptions;
+    key?: string;
 }
 
 /**

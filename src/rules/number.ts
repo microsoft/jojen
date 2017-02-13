@@ -1,14 +1,5 @@
-import { RuleParams } from '../RuleParams';
 import { IRuleValidationParams } from '../types/rule';
-import { SyncRule } from '../types/syncRule';
-
-export abstract class SingleArgumentBase extends SyncRule {
-    protected val: number;
-
-    public compile(params: RuleParams) {
-        this.val = params.args[0];
-    }
-}
+import { SingeValRule, SyncRule } from '../types/syncRule';
 
 export class NumberValidator extends SyncRule {
 
@@ -43,7 +34,7 @@ export class Integer extends SyncRule {
     }
 }
 
-export class Min extends SingleArgumentBase {
+export class Min extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<number>) {
         return params.value >= this.val || {
@@ -56,7 +47,7 @@ export class Min extends SingleArgumentBase {
     }
 }
 
-export class Max extends SingleArgumentBase {
+export class Max extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<number>) {
         return params.value <= this.val || {
@@ -69,7 +60,7 @@ export class Max extends SingleArgumentBase {
     }
 }
 
-export class Greater extends SingleArgumentBase {
+export class Greater extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<number>) {
         return params.value > this.val || {
@@ -82,7 +73,7 @@ export class Greater extends SingleArgumentBase {
     }
 }
 
-export class Less extends SingleArgumentBase {
+export class Less extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<number>) {
         return params.value < this.val || {
@@ -117,7 +108,7 @@ export class Positive extends SyncRule {
     }
 }
 
-export class Multiple extends SingleArgumentBase {
+export class Multiple extends SingeValRule<number> {
 
     public validateSync(params: IRuleValidationParams<number>) {
         return params.value % this.val === 0 || {
@@ -132,7 +123,7 @@ export class Multiple extends SingleArgumentBase {
 
 const precisionRegEx = /^-?\d+(\.\d+)?$/;
 
-export class Precision extends SingleArgumentBase {
+export class Precision extends SingeValRule<number> {
 
     public coerce(value: number) {
         return parseFloat(value.toFixed(this.val));

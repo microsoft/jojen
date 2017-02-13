@@ -1,9 +1,9 @@
-import { ILanguage } from './lang';
-import { defaultRules } from './rules';
+import { ValidationError } from './errors';
+import * as allRules from './rules';
 import { Default } from './rules/any';
 import { Ruleset } from './ruleset';
 import { Schema } from './Schema';
-import { Rule } from './types/rule';
+import { IRuleCtor, IRuleValidationParams, Rule } from './types/rule';
 import { assign } from './util';
 
 const defaultOptions = Object.freeze({
@@ -13,10 +13,30 @@ const defaultOptions = Object.freeze({
     // todo(connor4312): fill out the rest of the Joi options
 });
 
+export interface ILanguagePack {
+    [name: string]: (params: IRuleValidationParams<any>) => string;
+}
+
 export interface IValidationOptions {
     convert: boolean;
     captureStack: boolean;
     path?: string;
+}
+
+function values<T>(obj: T): T[keyof T][] {
+    const keys = Object.keys(obj);
+    const ret = [];
+    for (let i = 0; i < keys.length; ++i) {
+        ret.push(keys[i]);
+    }
+    return <any>ret;
+}
+
+const defaultRules: IRuleCtor<Rule>[] = values(allRules);
+
+export interface IValidationResult<T> {
+    error?: ValidationError;
+    value: T;
 }
 
 /**
@@ -25,9 +45,9 @@ export interface IValidationOptions {
  * Jo.required()) directly on the validator instance.
  */
 export class Validator {
-    private ruleset = new Ruleset()
-    private schema: Schema = null;
-    private lang: ILanguage = null;
+    private ruleset = new Ruleset();
+    private schema: Schema;
+    private lang: ILanguagePack;
     constructor() {
         this.add(defaultRules);
     }
@@ -37,18 +57,18 @@ export class Validator {
      * @param {Rule|[]Rule} rules
      * @return Validator
      */
-    public add(rules: Rule|Rule[]): this {
+    public add(rules: IRuleCtor<Rule> | IRuleCtor<Rule>[]): this {
         if (!Array.isArray(rules)) {
             this.add([rules]);
             return this;
         }
 
-        rules.forEach((rule) => {
+        rules.forEach(rule => {
             this.ruleset.addRule(rule.name().split('.'), rule);
         });
 
         this.schema = new Schema(this.ruleset).optional();
-        this.ruleset.buildChain(this, (method, child, ...args) =>
+        this.ruleset.buildChain(this, (method, _child, ...args) =>
             this.schema[method](...args),
         );
 
@@ -66,7 +86,7 @@ export class Validator {
      * @param  {Object|String} language
      * @return {Validator}
      */
-    public load(language) {
+    public load(language: ILanguagePack): this {
         if (typeof language === 'string') {
             this.lang = require(`./lang/${language}`);
         } else {
@@ -79,7 +99,7 @@ export class Validator {
     /**
      * Validates the give value against the schema.
      */
-    public validate(value: any, schema: Schema, options: IValidationOptions, callback: (err: Error, val?: any) => void) {
+    public validate(value: any, schema: Schema, options: IValidationOptions, callback: (err: ValidationError, val?: any) => void): void {
         if (typeof options === 'function') {
             callback = options;
             options = defaultOptions;
@@ -149,10 +169,10 @@ export class Validator {
      * Validates the give value against the schema synchronously.
      * @return {{value: *, error: !ValidationError}}
      */
-    public validateSync(value: any, schema: Schema, options?: IValidationOptions) {
+    public validateSync<T>(value: T, schema: Schema, options?: IValidationOptions): IValidationResult<T> {
         let done: boolean;
-        let error: Error;
-        let retVal: any;
+        let error: ValidationError;
+        let retVal: T;
         this.validate(value, schema, options, (err, val) => {
             done = true;
             error = err;
@@ -170,7 +190,7 @@ export class Validator {
     /**
      * Validates the give value against the schema.
      */
-    public assert(value: any, schema: Schema, message: string | Error): any {
+    public assert<T>(value: any, schema: Schema, message: string | Error): T {
         const ret = this.validateSync(value, schema);
         const error = ret.error;
         if (!error) {
@@ -180,10 +200,10 @@ export class Validator {
         if (typeof message === 'string') {
             error.message = `${message} ${error.message}`;
             throw error;
-        } else if (message) {
-            throw message;
-        } else {
-            throw error;
         }
+        if (message) {
+            throw message;
+        }
+        throw error;
     }
 }

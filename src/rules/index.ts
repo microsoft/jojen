@@ -11,4 +11,11 @@
 
 export default modules.reduce((rules, set) => rules.concat(set), []);*/
 
-export const defaultRules = {};
+export * from './alternatives';
+export * from './any';
+export * from './array';
+export * from './boolean';
+export * from './function';
+export * from './number';
+export * from './object';
+export * from './string';

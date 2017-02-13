@@ -7,9 +7,6 @@ import { Rule } from './rule';
  */
 export abstract class ComparatorRule extends Rule {
     private cmps: ((a: any, b: any) => boolean)[] = [(a, b) => a === b];
-    constructor() {
-        super();
-    }
 
     /**
      * Adds a comparator function to use for comparing the two values.

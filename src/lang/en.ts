@@ -1,12 +1,12 @@
 export const english = {
-    required: (opts) => `"${opts.key}" is required.`,
-    forbidden: (opts) => `"${opts.key}" is forbidden.`,
+    required: opts => `"${opts.key}" is required.`,
+    forbidden: opts => `"${opts.key}" is forbidden.`,
 
     invalid: opts => `"${opts.key}" must not equal ${opts.value}.`,
     valid: opts => `"${opts.key}" is not valid and must be ${opts.allowed.join()}.`,
 
-    'object.keys': (opts) => `"${opts.key}" is not an object.`,
-    'object.unknown': (opts) => `"${opts.key}" should not have "${opts.extra}".`,
+    'object.keys': opts => `"${opts.key}" is not an object.`,
+    'object.unknown': opts => `"${opts.key}" should not have "${opts.extra}".`,
 
     array: opts => `"${opts.key}" must be an array.`,
     'array.sparse': opts => `"${opts.key}" must be sparse.`,
@@ -14,7 +14,8 @@ export const english = {
     'array.min': opts => `"${opts.key}" must have at least ${opts.min} elements.`,
     'array.max': opts => `"${opts.key}" may not have more than ${opts.max} elements.`,
     'array.length': opts => `"${opts.key}" must have exactly ${opts.length} elements.`,
-    'array.unique': opts => `"${opts.key}" must be unique but duplicate "${opts.violator.value}" was found at index ${opts.violator.index}.`, // eslint-disable-line max-len
+    'array.unique': opts =>
+        `"${opts.key}" must be unique but duplicate "${opts.violator.value}" was found at index ${opts.violator.index}.`,
 
     string: opts => `"${opts.key}" must be a string`,
     'string.min': opts => `"${opts.key}" must be at least ${opts.min} characters long.`,

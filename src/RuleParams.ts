@@ -17,7 +17,7 @@ export class RuleParams {
      */
     public invokeLast<T extends Rule>(type: IRuleCtor<T>, fn: (rule: T) => void): boolean {
         for (let i = this.index - 1; i >= 0; i--) {
-            if (this.rules[i] instanceof type) {
+            if (this.rules[i] instanceof <any>type) {
                 fn(<T>this.rules[i]);
                 return true;
             }
@@ -31,7 +31,7 @@ export class RuleParams {
      */
     public invokeFirst<T extends Rule>(type: IRuleCtor<T>, fn: (rule: T) => void): boolean {
         for (let i = 0; i < this.index; i++) {
-            if (this.rules[i] instanceof type) {
+            if (this.rules[i] instanceof <any>type) {
                 fn(<T>this.rules[i]);
                 return true;
             }
@@ -46,7 +46,7 @@ export class RuleParams {
     public invokeAll<T extends Rule>(type: IRuleCtor<T>, fn: (rule: T) => void): boolean {
         let found = false;
         for (let i = 0; i < this.rules.length; i++) {
-            if (this.rules[i] instanceof type) {
+            if (this.rules[i] instanceof <any>type) {
                 fn(<T>this.rules[i]);
                 found = true;
             }
