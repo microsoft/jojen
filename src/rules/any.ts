@@ -75,7 +75,7 @@ export abstract class BuiltComparatorRule extends ComparatorRule {
             args = params.args;
         }
 
-        if (!params.invokeFirst(<IRuleCtor<BuiltComparatorRule>><any>this.constructor, r => { r.add(args); })) {
+        if (!params.invokeFirst(<IRuleCtor<BuiltComparatorRule>>this.constructor, r => { r.add(args); })) {
             this.values = args;
         }
     }

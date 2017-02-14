@@ -72,7 +72,7 @@ export class Ruleset {
             this.parent.buildChain(obj, fn);
         }
 
-        Object.keys(this.children).forEach((key) => {
+        Object.keys(this.children).forEach(key => {
             const child = this.children[key];
             const handler = function (...args: any[]) {
                 return fn.call(this, key, child, args);

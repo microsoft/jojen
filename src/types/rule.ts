@@ -58,7 +58,7 @@ export abstract class Rule {
      * @param  {Function} callback Should be called with a
      *                             ValidationError, or nothing.
      */
-    public abstract validate(params: Object, cb: (err: ValidationError, value?: any) => void): void;
+    public abstract validate(params: IRuleValidationParams<any>, cb: (err: ValidationError, value?: any) => void): void;
 
     /**
      * Attempts to coerce the value to the match this rule. This will only
