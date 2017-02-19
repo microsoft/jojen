@@ -85,4 +85,27 @@ describe('object', () => {
             });
         });
     });
+
+    describe('pattern', () => {
+        it('validates unknown keys using a pattern', () => {
+            expect(Jo => Jo.object().pattern(/\d+/, Jo.number())).to.failOn({ b: 42 });
+            expect(Jo => Jo.object().pattern(/\w+/, Jo.number())).to.not.failOn({ b: 42 });
+        });
+
+        it('validates values using a pattern', () => {
+            expect(Jo => Jo.object().pattern(/\w+/, Jo.number())).to.failOn({ b: 'string' });
+            expect(Jo => Jo.object().pattern(/\w+/, Jo.number())).to.not.failOn({ b: 42 });
+        });
+
+        it('converts parameters', () => {
+            Jo.validate(
+                { a: '42' },
+                Jo.object().pattern(/\w+/, Jo.number()),
+                (err, value) => {
+                    expect(err).to.be.null;
+                    expect(value).to.deep.equal({ a: 42 });
+                }
+            );
+        });
+    });
 });
