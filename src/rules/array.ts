@@ -80,12 +80,17 @@ export class Items extends Rule {
     }
 
     public validate(params: IRuleValidationParams<any[]>, callback: (error?: Error, data?: any) => void) {
-        return async.map(params.value, (item, index) => {
-            const options = clone(params.options);
-            options.path = options.path.concat(`[${index}]`);
+        return async.map(
+            params.value, (item, index) => {
+                const options = clone(params.options);
+                options.path = options.path.concat(`[${index}]`);
 
-            return (done: (error?: Error, data?: any) => void) => { params.validator.validate(item, this.schema, options, done); };
-        }, callback);
+                return (done: (error?: Error, data?: any) => void) => {
+                    params.validator.validate(item, this.schema, options, done);
+                };
+            },
+            callback,
+        );
     }
 
     public static ruleName() {
@@ -106,12 +111,15 @@ export class Ordered extends Rule {
             return callback(this.error(params, { length, expected }));
         }
 
-        return async.map(this.schemas, (schema, index) => {
-            const options = clone(params.options);
-            options.path = options.path.concat(`[${index}]`);
+        return async.map(
+            this.schemas, (schema, index) => {
+                const options = clone(params.options);
+                options.path = options.path.concat(`[${index}]`);
 
-            return (done: (error?: Error) => void) => params.validator.validate(params.value[index], schema, options, done);
-        }, callback);
+                return (done: (error?: Error) => void) => params.validator.validate(params.value[index], schema, options, done);
+            },
+            callback,
+        );
     }
 
     public static ruleName() {

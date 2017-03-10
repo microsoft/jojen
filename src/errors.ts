@@ -1,15 +1,6 @@
+import { ILanguagePack } from './lang';
 import { IRuleValidationParams, Rule } from './types/rule';
 import { assign, pick } from './util';
-import { ILanguagePack } from './lang';
-
-/**
- * Object passed to language definitions to spit out a pretty message.
- * @typedef {Object} ValidationLanguageOptions
- * @param {String} key - the key of the value that failed validation
- * @param {Object} params - original params object the rule was created with
- * @param {*} value - the object under validation
- * @param {*} info - optional additional info returned from the validation rule
- */
 
 export interface IStackTraceCapturer {
     captureStackTrace (self: Error): void;
@@ -22,9 +13,10 @@ export class ValidationError extends Error {
     public readonly isJoi: boolean = true; // shh! They'll never find us!
     public readonly name = 'ValidationError';
     private opts: {
+        key: string;
         rule: string;
         ruleParams: any[];
-    };
+    } & IRuleValidationParams<any>;
     public details: {
         message?: string;
         path: string;
@@ -40,12 +32,10 @@ export class ValidationError extends Error {
         const opts = assign(
             {
                 key,
-            },
-            params,
-            {
                 rule: rule.name(),
                 ruleParams: rule.params,
             },
+            params,
             info,
         );
 
@@ -61,7 +51,6 @@ export class ValidationError extends Error {
     /**
      * Attaches the error to a language definition in
      * order to fill out its details.
-     * @param  {Object} language
      */
     public attach (language: ILanguagePack) {
         if (!language) {
@@ -112,7 +101,6 @@ export class ValidationError extends Error {
 
     /**
      * Converts the validation error to a JSON string.
-     * @return {String}
      */
     public toString (): string {
         return JSON.stringify(this.toJSON(), null, 2);

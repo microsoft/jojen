@@ -61,11 +61,6 @@ export class Ruleset {
 
     /**
      * Attaches rule methods to the provided object.
-     * @param  {Object} obj
-     * @param  {Function} fn invoked with the key and the new ruleset when
-     *                       a chained method is called. Its output will
-     *                       be the returned value from the built function.
-     * @return {Object}
      */
     public buildChain (obj: Validator | Schema, fn: (key: string, child: Ruleset, ...args: any[]) => Schema) {
         if (this.parent) {
@@ -78,7 +73,7 @@ export class Ruleset {
                 return fn.call(this, key, child, args);
             };
 
-            obj[key] = handler; //eslint-disable-line
+            obj[key] = handler;
         });
     }
 }

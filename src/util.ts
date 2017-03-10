@@ -70,7 +70,7 @@ export const async = {
         collection: T[],
         iteratee: (item: T, index: number) =>
             ((done: (error?: Error, data?: R) => void) => void),
-        callback: (err: Error, items?: R[]) => void
+        callback: (err: Error, items?: R[]) => void,
     ) {
         async.all(collection.map((item, index) => iteratee(item, index)), callback);
     },
@@ -112,8 +112,6 @@ export function pick<T>(obj: T, attrs: (keyof T)[]): T {
 
 /**
  * Simple, shallow clone of a plain object.
- * @param  {Object} obj
- * @return {Object}
  */
 export function clone<T>(obj: T): T {
     return assign(<T>{}, obj);

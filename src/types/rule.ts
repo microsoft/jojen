@@ -52,11 +52,6 @@ export abstract class Rule {
     /**
      * Returns whether or not the provided value passes validation. It should
      * return an array of ValidationErrors if it fails.
-     * @param  {Object}   params
-     * @param  {*}        params.value
-     * @param  {[]String} params.path
-     * @param  {Function} callback Should be called with a
-     *                             ValidationError, or nothing.
      */
     public abstract validate(params: IRuleValidationParams<any>, cb: (err: ValidationError, value?: any) => void): void;
 
@@ -74,9 +69,6 @@ export abstract class Rule {
 
     /**
      * Returns a single ValidationError Used to signal a failure on *this* rule.
-     * @param {Object} params as passed to validate()
-     * @param {Object} [info] additional information about the failure
-     * @return {ValidationError}
      */
     public error (params: IRuleValidationParams<any>, info?: {}): ValidationError {
         return new ValidationError(this, params, info);

@@ -1,5 +1,5 @@
-import { Schema } from '../Schema';
 import { RuleParams } from '../RuleParams';
+import { Schema } from '../Schema';
 import {
     IRuleValidationParams,
     NonOperatingRule,
@@ -49,11 +49,8 @@ export class Keys extends Rule {
     /**
      * Checks to see if the value contains unknown keys. Returns true and
      * calls back with an error if so.
-     * @param  {Object}   params
-     * @param  {Function} callback
-     * @return {Boolean}
      */
-    private validateUnknown(params: IRuleValidationParams<{}>, callback: (error: Error) => void) {
+    private validateUnknown(params: IRuleValidationParams<{}>, callback: (error: Error) => void): boolean {
         const keys = Object.keys(params.value);
         for (let i = 0; i < keys.length; i++) {
             if (this.keys.indexOf(keys[i]) === -1) {
@@ -106,7 +103,6 @@ export class Keys extends Rule {
         return 'object.keys';
     }
 }
-
 
 export class Pattern extends Rule {
     private keyRegex: RegExp;

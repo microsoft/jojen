@@ -143,7 +143,6 @@ export class Validator {
 
     /**
      * Validates the give value against the schema synchronously.
-     * @return {{value: *, error: !ValidationError}}
      */
     public validateSync<T>(value: T, schema: Schema, options?: IValidationOptions): IValidationResult<T> {
         let done: boolean;
