@@ -19,8 +19,6 @@ export abstract class ComparatorRule extends Rule {
      * Compares `a` and `b`, returning true if they're equal. This loops
      * through all comparators we have and returns true if ANY of them
      * return true.
-     *
-     * @return {Boolean}
      */
     public compare(a: any, b: any) {
         for (let i = 0; i < this.cmps.length; i++) {

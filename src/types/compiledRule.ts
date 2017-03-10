@@ -17,7 +17,6 @@ export abstract class CompiledRule extends Rule {
     /**
      * Returns a string for a function that will be called with the same
      * signature and arguments as #Validator.validate.
-     * @return {String}
      * @example
      *   getFn() {
      *     return `if (params.value === 42) {
