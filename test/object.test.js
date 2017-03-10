@@ -1,6 +1,13 @@
 import Jo from '../lib';
 
 describe('object', () => {
+    it('validates types', () => {
+        expect(Jo => Jo.object()).not.to.failOn({});
+        expect(Jo => Jo.object()).to.failOn(null);
+        expect(Jo => Jo.object()).to.failOn(42);
+        expect(Jo => Jo.object()).to.failOn('nope');
+    });
+
     describe('keys', () => {
         it('restricts unknown', () => {
             expect((Jo) => Jo.object().keys({ a: Jo.any() })).to.failOn({ b: 42 }, [
@@ -76,6 +83,29 @@ describe('object', () => {
             }, {
                 joi: false,
             });
+        });
+    });
+
+    describe('pattern', () => {
+        it('validates unknown keys using a pattern', () => {
+            expect(Jo => Jo.object().pattern(/\d+/, Jo.number())).to.failOn({ b: 42 });
+            expect(Jo => Jo.object().pattern(/\w+/, Jo.number())).to.not.failOn({ b: 42 });
+        });
+
+        it('validates values using a pattern', () => {
+            expect(Jo => Jo.object().pattern(/\w+/, Jo.number())).to.failOn({ b: 'string' });
+            expect(Jo => Jo.object().pattern(/\w+/, Jo.number())).to.not.failOn({ b: 42 });
+        });
+
+        it('converts parameters', () => {
+            Jo.validate(
+                { a: '42' },
+                Jo.object().pattern(/\w+/, Jo.number()),
+                (err, value) => {
+                    expect(err).to.be.null;
+                    expect(value).to.deep.equal({ a: 42 });
+                }
+            );
         });
     });
 });

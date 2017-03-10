@@ -72,4 +72,7 @@ export const english = {
     'number.positive': opts => `"${opts.key}" must be positive.`,
     'number.multiple': opts => `"${opts.key}" must be multiple of ${opts.multiple}.`,
     'number.precision': opts => `"${opts.key}" must have a max precision of ${opts.limit}.`,
+
+    date: opts => `"${opts.key}" must be an iso date.`,
+    'date.greaterThanNow': opts => `"${opts.key}" must be a date in the future.`,
 };

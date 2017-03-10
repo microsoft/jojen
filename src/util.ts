@@ -29,6 +29,7 @@ export const async = {
             fns[i](cb);
         }
     },
+
     /**
      * Attempts to run all funcs and callbacks positively on the first success.
      */
@@ -60,6 +61,18 @@ export const async = {
         for (let i = 0; i < fns.length && todo > 0; i++) {
             fns[i](cb);
         }
+    },
+
+    /**
+     * Map an array to a function in parallel.
+     */
+    map<T, R>(
+        collection: T[],
+        iteratee: (item: T, index: number) =>
+            ((done: (error?: Error, data?: R) => void) => void),
+        callback: (err: Error, items?: R[]) => void
+    ) {
+        async.all(collection.map((item, index) => iteratee(item, index)), callback);
     },
 };
 

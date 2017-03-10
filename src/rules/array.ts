@@ -80,14 +80,12 @@ export class Items extends Rule {
     }
 
     public validate(params: IRuleValidationParams<any[]>, callback: (error?: Error, data?: any) => void) {
-        const todo = params.value.map((item, index) => {
+        return async.map(params.value, (item, index) => {
             const options = clone(params.options);
             options.path = options.path.concat(`[${index}]`);
 
-            return (done: (error?: Error, data?: any) => void) => params.validator.validate(item, this.schema, options, done);
-        });
-
-        async.all(todo, callback);
+            return (done: (error?: Error, data?: any) => void) => { params.validator.validate(item, this.schema, options, done); };
+        }, callback);
     }
 
     public static ruleName() {
@@ -108,14 +106,12 @@ export class Ordered extends Rule {
             return callback(this.error(params, { length, expected }));
         }
 
-        const todo = this.schemas.map((schema, index) => {
+        return async.map(this.schemas, (schema, index) => {
             const options = clone(params.options);
             options.path = options.path.concat(`[${index}]`);
 
             return (done: (error?: Error) => void) => params.validator.validate(params.value[index], schema, options, done);
-        });
-
-        return async.all(todo, callback);
+        }, callback);
     }
 
     public static ruleName() {

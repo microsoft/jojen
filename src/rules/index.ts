@@ -1,6 +1,7 @@
 /*const modules = [
     require('./any'),
     require('./array'),
+    require('./date'),
     require('./object'),
     require('./number'),
     require('./function'),
@@ -19,3 +20,4 @@ export * from './function';
 export * from './number';
 export * from './object';
 export * from './string';
+export * from './date';

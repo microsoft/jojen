@@ -1,3 +1,4 @@
+import { Schema } from '../Schema';
 import { RuleParams } from '../RuleParams';
 import {
     IRuleValidationParams,
@@ -103,6 +104,57 @@ export class Keys extends Rule {
 
     public static ruleName() {
         return 'object.keys';
+    }
+}
+
+
+export class Pattern extends Rule {
+    private keyRegex: RegExp;
+    private valueSchema: Schema;
+    public compile(params: RuleParams) {
+        this.keyRegex = new RegExp(params.args[0]);
+        this.valueSchema = params.args[1];
+    }
+
+    validate(params: IRuleValidationParams<{ [key: string]: any}>, callback: (error?: Error) => void) {
+        const value = params.value;
+        if (value === undefined || value === null) {
+            return callback(this.error(params));
+        }
+
+        const todo = Object.keys(value).map((key) => {
+            const options = clone(params.options);
+            options.path = options.path.concat(key);
+
+            return (done: (error?: Error) => void) => {
+                if (!this.keyRegex.test(key)) {
+                    done(this.error(params, { extra: key, rule: 'object.unknown' }));
+                    return;
+                }
+
+                params.validator.validate(
+                    value[key],
+                    this.valueSchema,
+                    options,
+                    (err, converted) => {
+                        if (err) {
+                            return done(err);
+                        }
+
+                        if (options.convert && converted !== undefined) {
+                            value[key] = converted;
+                        }
+
+                        return done();
+                    });
+            };
+        });
+
+        return async.all(todo, callback);
+    }
+
+    static ruleName() {
+        return 'object.pattern';
     }
 }
 
