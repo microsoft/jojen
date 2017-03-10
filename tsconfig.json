@@ -23,7 +23,11 @@
             "es2015.core"
         ]
     },
+    "include": [
+        "src/**/*"
+    ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 }

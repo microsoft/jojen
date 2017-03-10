@@ -73,7 +73,8 @@ export class Ruleset {
                 return fn.call(this, key, child, args);
             };
 
-            obj[key] = handler;
+            // TODO: Improve this.
+            (<any>obj)[key] = handler;
         });
     }
 }

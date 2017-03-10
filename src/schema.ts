@@ -90,6 +90,3 @@ export class Schema {
     }
 }
 
-export type IndexableSchema = {
-    [rule: string]: (...args: any[]) => this;
-};

@@ -22,6 +22,7 @@
     "restrict-plus-operands": false,
     "no-increment-decrement": false,
     "no-reserved-keywords": false,
-    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    "no-suspicious-comment": false
   }
 }

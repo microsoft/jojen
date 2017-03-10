@@ -66,7 +66,7 @@ export class Validator {
         const schema = <IAnySchema>new Schema(this.ruleset);
         this.schema = schema.optional();
         this.ruleset.buildChain(this, (method, _child, ...args) =>
-            (<IndexableSchema><any>this.schema)[method](...args),
+            (<{ [rule: string]: (...args: any[]) => Schema }><any>this.schema)[method](...args),
         );
 
         return this;

@@ -5,7 +5,9 @@
   "main": "dist/index",
   "typings": "dist/index",
   "scripts": {
-      "build": "tsc"
+      "build": "tsc",
+      "lint": "tslint --project tsconfig.json \"src/**/*.ts\"",
+      "test": "npm run lint"
   },
   "repository": {
     "type": "git",
