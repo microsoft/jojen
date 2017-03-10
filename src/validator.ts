@@ -1,9 +1,11 @@
+import { IAnySchema } from './compiledSchemas';
 import { ValidationError } from './errors';
+import { ILanguagePack, lang } from './lang';
 import * as allRules from './rules';
 import { Default } from './rules/any';
-import { Ruleset } from './ruleset';
-import { Schema } from './Schema';
-import { IRuleCtor, IRuleValidationParams, Rule } from './types/rule';
+import { Ruleset } from './Ruleset';
+import { IndexableSchema, Schema } from './Schema';
+import { IRuleCtor, Rule } from './types/rule';
 import { assign } from './util';
 
 const defaultOptions = Object.freeze({
@@ -13,14 +15,10 @@ const defaultOptions = Object.freeze({
     // todo(connor4312): fill out the rest of the Joi options
 });
 
-export interface ILanguagePack {
-    [name: string]: (params: IRuleValidationParams<any>) => string;
-}
-
 export interface IValidationOptions {
     convert: boolean;
     captureStack: boolean;
-    path?: string;
+    path?: string[];
 }
 
 function values<T>(obj: T): T[keyof T][] {
@@ -47,15 +45,13 @@ export interface IValidationResult<T> {
 export class Validator {
     private ruleset = new Ruleset();
     private schema: Schema;
-    private lang: ILanguagePack;
+    private lang: ILanguagePack = lang;
     constructor() {
         this.add(defaultRules);
     }
 
     /**
      * Adds a new Rule or array of Rules to the validator.
-     * @param {Rule|[]Rule} rules
-     * @return Validator
      */
     public add(rules: IRuleCtor<Rule> | IRuleCtor<Rule>[]): this {
         if (!Array.isArray(rules)) {
@@ -64,34 +60,14 @@ export class Validator {
         }
 
         rules.forEach(rule => {
-            this.ruleset.addRule(rule.name().split('.'), rule);
+            this.ruleset.addRule(rule.ruleName().split('.'), rule);
         });
 
-        this.schema = new Schema(this.ruleset).optional();
+        const schema = <IAnySchema>new Schema(this.ruleset);
+        this.schema = schema.optional();
         this.ruleset.buildChain(this, (method, _child, ...args) =>
-            this.schema[method](...args),
+            (<IndexableSchema><any>this.schema)[method](...args),
         );
-
-        return this;
-    }
-
-    /**
-     * Attempts to load the language. The language can be:
-     *  - an hashmap of validators to message functions, which are invoked
-     *    with a ValidationLanguageOptions object.
-     *  - a string to load a built-in rule, like 'en'. Note that this will
-     *    NOT work with browserify, you must call
-     *    Jo.load(require('jojen/dist/lang/en'))
-     *
-     * @param  {Object|String} language
-     * @return {Validator}
-     */
-    public load(language: ILanguagePack): this {
-        if (typeof language === 'string') {
-            this.lang = require(`./lang/${language}`);
-        } else {
-            this.lang = language;
-        }
 
         return this;
     }

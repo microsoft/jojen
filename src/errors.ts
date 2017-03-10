@@ -1,6 +1,6 @@
 import { IRuleValidationParams, Rule } from './types/rule';
 import { assign, pick } from './util';
-import { ILanguagePack } from './validator';
+import { ILanguagePack } from './lang';
 
 /**
  * Object passed to language definitions to spit out a pretty message.

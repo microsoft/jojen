@@ -26,11 +26,6 @@ export class Schema {
      * Creates an instance of the Rule (Node) with the provided arguments
      * and adds it to the list. This does not run compile on the node,
      * just instantiates it without side effects.
-     *
-     * @param  {Fucntion} Node
-     * @param  {Array} args
-     * @param  {[]Rule} rules
-     * @return {[]Rule}
      */
     private build(ctor: IRuleCtor<Rule>, args: any[], list: Rule[]): Rule[] {
         if (ctor === null) {
@@ -46,7 +41,6 @@ export class Schema {
     /**
      * Compiles the generators in this schema to a list of rules. De-duplicates
      * the rule set and removes rules that don't operate.
-     * @return {[]Rule}
      */
     private compile(): Rule[] {
         // Stable sort the rules so that higher-priority rules come first.
@@ -85,7 +79,6 @@ export class Schema {
 
     /**
      * Gets a list of rules for this schema.
-     * @return {Schema}
      */
     public getRules(): Rule[] {
         if (!this.compiled) {
@@ -96,3 +89,7 @@ export class Schema {
         return this.rules;
     }
 }
+
+export type IndexableSchema = {
+    [rule: string]: (...args: any[]) => this;
+};

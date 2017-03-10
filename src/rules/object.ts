@@ -116,7 +116,7 @@ export class Pattern extends Rule {
         this.valueSchema = params.args[1];
     }
 
-    validate(params: IRuleValidationParams<{ [key: string]: any}>, callback: (error?: Error) => void) {
+    public validate(params: IRuleValidationParams<{ [key: string]: any}>, callback: (error?: Error) => void) {
         const value = params.value;
         if (value === undefined || value === null) {
             return callback(this.error(params));
@@ -153,7 +153,7 @@ export class Pattern extends Rule {
         return async.all(todo, callback);
     }
 
-    static ruleName() {
+    public static ruleName() {
         return 'object.pattern';
     }
 }

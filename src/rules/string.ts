@@ -1,4 +1,4 @@
-import url from 'url';
+import * as url from 'url';
 import * as isCreditCard from 'validator/lib/isCreditCard';
 import * as isURL from 'validator/lib/isURL';
 
@@ -16,7 +16,6 @@ const emailRegex = /^[-a-z\d~!$%^&*_=+}{'?]+(\.[-a-z\d~!$%^&*_=+}{'?]+)*@([a-z\d
 const guidRegex = /^[\dA-F]{8}[-]?([\dA-F]{4}[-]?){3}[\dA-F]{12}$/i;
 const hexRegex = /^[a-f\d]+$/i;
 
-const dateRegex = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
 const alnumRegex = /^[a-z\d]+$/i;
 const tokenRegex = /^\w+$/i;
 const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/\d+)?$/;
@@ -349,23 +348,5 @@ export class Trim extends SyncRule {
 
     public static ruleName() {
         return 'string.trim';
-    }
-}
-
-export class IsoDate extends SyncRule {
-    public validateSync(params: IRuleValidationParams<string>) {
-        if (!dateRegex.test(params.value)) {
-            return false;
-        }
-        try {
-            Date.parse(params.value);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    public static ruleName() {
-        return 'string.isoDate';
     }
 }

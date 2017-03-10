@@ -1,4 +1,10 @@
-export const english = {
+import { IRuleValidationParams } from './types/rule';
+
+export interface ILanguagePack {
+    [name: string]: (params: IRuleValidationParams<any>) => string;
+}
+
+export const lang: ILanguagePack = {
     required: opts => `"${opts.key}" is required.`,
     forbidden: opts => `"${opts.key}" is forbidden.`,
 
