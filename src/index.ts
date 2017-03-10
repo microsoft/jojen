@@ -1,7 +1,8 @@
+import { IMainSchema } from './compiledSchemas';
 import { Schema } from './Schema';
 import { IValidationOptions, IValidationResult, Validator } from './validator';
 
-export interface IGlobalJo {
+export interface IGlobalJo extends IMainSchema {
     (): Validator;
     validate(value: any, schema: Schema, options: IValidationOptions, callback: (err: Error, val?: any) => void): void;
     validateSync<T>(value: T, schema: Schema, options?: IValidationOptions): IValidationResult<T>;
