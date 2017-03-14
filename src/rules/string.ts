@@ -3,12 +3,12 @@ import * as isCreditCard from 'validator/lib/isCreditCard';
 import * as isURL from 'validator/lib/isURL';
 
 import { RuleParams } from '../RuleParams';
-import { ComparatorRule } from '../types/comparatorRule';
+import { ComparatorRule } from '../types/ComparatorRule';
 import {
     IRuleValidationParams,
     NonOperatingRule,
-} from '../types/rule';
-import { SingeValRule, SyncRule } from '../types/syncRule';
+} from '../types/Rule';
+import { SingeValRule, SyncRule } from '../types/SyncRule';
 import { escapeRegExp } from '../util';
 
 /* tslint:disable */
@@ -24,12 +24,16 @@ const hostnameRegEx = /^(([a-z\d]|[a-z\d][a-z\d\-]*[a-z\d])\.)*([a-z\d]|[a-z\d][
 /* tslint:enable */
 
 export class StringValidator extends SyncRule {
-    public validateSync(params: IRuleValidationParams<any>) {
+    public validateSync(params: IRuleValidationParams<any, void>) {
         return typeof params.value === 'string';
     }
 
     public static ruleName() {
         return 'string';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be a string.`;
     }
 }
 
@@ -51,11 +55,15 @@ export class Insensitive extends NonOperatingRule {
     public static ruleName() {
         return 'string.insensitive';
     }
+
+    public getErrorMessage(): string {
+        return '';
+    }
 }
 
 export class MinLength extends SingeValRule<number> {
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return params.value.length >= this.val || {
             length: params.value.length,
             min: this.val,
@@ -65,11 +73,15 @@ export class MinLength extends SingeValRule<number> {
     public static ruleName() {
         return 'string.min';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be at least ${this.val} chars long.`;
+    }
 }
 
 export class MaxLength extends SingeValRule<number> {
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return params.value.length <= this.val || {
             length: params.value.length,
             max: this.val,
@@ -79,11 +91,15 @@ export class MaxLength extends SingeValRule<number> {
     public static ruleName() {
         return 'string.max';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be at most ${this.val} chars long.`;
+    }
 }
 
 export class Length extends SingeValRule<number> {
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return params.value.length === this.val || {
             length: params.value.length,
             expected: this.val,
@@ -93,15 +109,23 @@ export class Length extends SingeValRule<number> {
     public static ruleName() {
         return 'string.length';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be exactly ${this.val} chars long.`;
+    }
 }
 
 export class CreditCard extends SyncRule {
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return isCreditCard(params.value);
     }
 
     public static ruleName() {
         return 'string.creditCard';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be a credit card number.`;
     }
 }
 
@@ -118,7 +142,7 @@ export class RegEx extends SyncRule {
         ].join('')) : orig;
     }
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         // TODO: RegEx naming
         return this.regExp.test(params.value) || {
             regEx: this.regExp,
@@ -128,37 +152,53 @@ export class RegEx extends SyncRule {
     public static ruleName() {
         return 'string.regex';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must match the RegEx ${this.regExp}.`;
+    }
 }
 
 export class AlphaNumeric extends SyncRule {
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return alnumRegex.test(params.value);
     }
 
     public static ruleName() {
         return 'string.alphanum';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must alphanumeric.`;
+    }
 }
 
 export class Token extends SyncRule {
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return tokenRegex.test(params.value);
     }
 
     public static ruleName() {
         return 'string.token';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must a token.`;
+    }
 }
 
 export class Email extends SyncRule {
     // TODO: Options
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return emailRegex.test(params.value);
     }
 
     public static ruleName() {
         return 'string.email';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be an email address.`;
     }
 }
 
@@ -194,7 +234,7 @@ export class IP extends SyncRule {
         }
     }
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         let reason: string;
         const res = this.matches.find(regEx => {
             const match = params.value.match(regEx);
@@ -222,8 +262,21 @@ export class IP extends SyncRule {
         };
     }
 
-    public static ruleName() {
+    public static ruleName(): string {
         return 'string.ip';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, { reason: string }>): string {
+        switch (params.meta.reason) {
+            case 'not-matched':
+                return `"${params.key}" must be a valid ${this.versions.join(' or ')} address.`;
+            case 'cidr-required':
+                return `"${params.key}" must contain a valid CIDR.`;
+            case 'cidr-not-allowed':
+                return `"${params.key}" must not contain a CIDR.`;
+            default:
+                throw new Error('wut');
+        }
     }
 }
 
@@ -247,7 +300,7 @@ export class URI extends SyncRule {
         });
     }
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         const res = url.parse(params.value);
         if (
             this.schemes &&
@@ -275,36 +328,58 @@ export class URI extends SyncRule {
     public static ruleName() {
         return 'string.uri';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, { reason: string }>): string {
+        if (params.meta.reason === 'scheme not allowed') {
+            return `"${params.key}" scheme must be ${this.schemes.join(' or ')}.`;
+        }
+        if (params.meta.reason === 'relativ-not-allowed') {
+            return `"${params.key}" must be an absolute URL.`;
+        }
+        return `"${params.key}" must be valid URL.`;
+    }
 }
 
 export class GUID extends SyncRule {
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return guidRegex.test(params.value);
     }
 
     public static ruleName() {
         return 'string.guid';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be an GUID.`;
+    }
 }
 
 export class Hex extends SyncRule {
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return hexRegex.test(params.value);
     }
 
     public static ruleName() {
         return 'string.hex';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be hexadecimal.`;
+    }
 }
 
 export class Hostname extends SyncRule {
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         const v = params.value;
         return hostnameRegEx.test(v) || ipv4Regex.test(v) || ipv6RegEx.test(v);
     }
 
     public static ruleName() {
         return 'string.hostname';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be a hostname.`;
     }
 }
 
@@ -313,12 +388,16 @@ export class LowerCase extends SyncRule {
         return value.toLowerCase && value.toLowerCase();
     }
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return params.value.toLowerCase() === params.value;
     }
 
     public static ruleName() {
         return 'string.lowercase';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be lowercase.`;
     }
 }
 
@@ -327,12 +406,16 @@ export class UpperCase extends SyncRule {
         return value.toUpperCase();
     }
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return params.value.toUpperCase() === params.value;
     }
 
     public static ruleName() {
         return 'string.uppercase';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be uppercase.`;
     }
 }
 
@@ -342,11 +425,15 @@ export class Trim extends SyncRule {
         return value.trim();
     }
 
-    public validateSync(params: IRuleValidationParams<string>) {
+    public validateSync(params: IRuleValidationParams<string, void>) {
         return params.value.trim() === params.value;
     }
 
     public static ruleName() {
         return 'string.trim';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be trimmed.`;
     }
 }

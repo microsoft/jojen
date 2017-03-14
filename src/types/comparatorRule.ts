@@ -1,4 +1,4 @@
-import { Rule } from './rule';
+import { Rule } from './Rule';
 
 /**
  * The ComparatorRule is a type of rule whose main function is comparing

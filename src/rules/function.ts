@@ -1,28 +1,25 @@
 import { RuleParams } from '../RuleParams';
-import { IRuleValidationParams } from '../types/rule';
-import { SyncRule } from '../types/syncRule';
+import { IRuleValidationParams } from '../types/Rule';
+import { SingeValRule, SyncRule } from '../types/SyncRule';
 
 export class FunctionValidator extends SyncRule {
 
-    public validateSync(params: IRuleValidationParams<any>) {
+    public validateSync(params: IRuleValidationParams<any, void>) {
         return typeof params.value === 'function';
     }
 
     public static ruleName() {
         return 'func';
     }
-}
 
-export abstract class ArityBase extends SyncRule {
-    protected val: number;
-    public compile(params: RuleParams) {
-        this.val = params.args[0];
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return  `"${params.key}" must be a function.`;
     }
 }
 
-export class Arity extends ArityBase {
+export class Arity extends SingeValRule<number> {
 
-    public validateSync(params: IRuleValidationParams<Function>) {
+    public validateSync(params: IRuleValidationParams<Function, void>) {
         const arity = params.value.length;
         return arity === this.val || {
             arity,
@@ -33,15 +30,19 @@ export class Arity extends ArityBase {
     public static ruleName() {
         return 'func.arity';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return  `"${params.key}" must have exactly ${this.val} arguments.`;
+    }
 }
 
-export class MinArity extends ArityBase {
+export class MinArity extends SingeValRule<number> {
 
     public compile(params: RuleParams) {
         this.val = params.args[0];
     }
 
-    public validateSync(params: IRuleValidationParams<Function>) {
+    public validateSync(params: IRuleValidationParams<Function, void>) {
         const arity = params.value.length;
         return arity >= this.val || {
             arity,
@@ -52,11 +53,15 @@ export class MinArity extends ArityBase {
     public static ruleName() {
         return 'func.minArity';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return  `"${params.key}" must have at least ${this.val} arguments.`;
+    }
 }
 
-export class MaxArity extends ArityBase {
+export class MaxArity extends SingeValRule<number> {
 
-    public validateSync(params: IRuleValidationParams<Function>) {
+    public validateSync(params: IRuleValidationParams<Function, void>) {
         const arity = params.value.length;
         return arity <= this.val || {
             arity,
@@ -66,5 +71,9 @@ export class MaxArity extends ArityBase {
 
     public static ruleName() {
         return 'func.maxArity';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return  `"${params.key}" must have at most ${this.val} arguments.`;
     }
 }

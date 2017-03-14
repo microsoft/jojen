@@ -1,4 +1,4 @@
-import Jo from '../lib';
+const Jo = require('../src');
 
 describe('object', () => {
     it('validates types', () => {

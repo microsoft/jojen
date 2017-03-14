@@ -4,10 +4,10 @@ import {
     IRuleValidationParams,
     NonOperatingRule,
     Rule,
-} from '../types/rule';
+} from '../types/Rule';
 import {
     SyncRule,
-} from '../types/syncRule';
+} from '../types/SyncRule';
 import {
     assign,
     async,
@@ -15,12 +15,16 @@ import {
 } from '../util';
 
 export class ObjectValidator extends SyncRule {
-    public validateSync(params: IRuleValidationParams<{}>) {
+    public validateSync(params: IRuleValidationParams<any, void>) {
         return params.value && typeof params.value === 'object';
     }
 
     public static ruleName() {
         return 'object';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be an object`;
     }
 }
 
@@ -50,7 +54,7 @@ export class Keys extends Rule {
      * Checks to see if the value contains unknown keys. Returns true and
      * calls back with an error if so.
      */
-    private validateUnknown(params: IRuleValidationParams<{}>, callback: (error: Error) => void): boolean {
+    private validateUnknown(params: IRuleValidationParams<{}, void>, callback: (error: Error) => void): boolean {
         const keys = Object.keys(params.value);
         for (let i = 0; i < keys.length; i++) {
             if (this.keys.indexOf(keys[i]) === -1) {
@@ -62,7 +66,7 @@ export class Keys extends Rule {
         return false;
     }
 
-    public validate(params: IRuleValidationParams<{ [key: string]: any }>, callback: (error?: Error) => void) {
+    public validate(params: IRuleValidationParams<{ [key: string]: any }, void>, callback: (error?: Error) => void) {
         const value = params.value;
         if (value === undefined || value === null) {
             return callback(this.error(params));
@@ -102,6 +106,13 @@ export class Keys extends Rule {
     public static ruleName() {
         return 'object.keys';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, { extra: string }>): string {
+        if (params.meta) {
+            return `"${params.key}" must not have "${params.meta.extra}".`;
+        }
+        return `"${params.key}" is not an object.`;
+    }
 }
 
 export class Pattern extends Rule {
@@ -112,7 +123,7 @@ export class Pattern extends Rule {
         this.valueSchema = params.args[1];
     }
 
-    public validate(params: IRuleValidationParams<{ [key: string]: any}>, callback: (error?: Error) => void) {
+    public validate(params: IRuleValidationParams<{ [key: string]: any}, void>, callback: (error?: Error) => void) {
         const value = params.value;
         if (value === undefined || value === null) {
             return callback(this.error(params));
@@ -152,6 +163,10 @@ export class Pattern extends Rule {
     public static ruleName() {
         return 'object.pattern';
     }
+
+    public getErrorMessage(): string {
+        return '';
+    }
 }
 
 export class Unknown extends NonOperatingRule {
@@ -167,4 +182,9 @@ export class Unknown extends NonOperatingRule {
     public static ruleName() {
         return 'object.unknown';
     }
+
+    public getErrorMessage(): string {
+        return '';
+    }
+
 }

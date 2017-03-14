@@ -20,7 +20,12 @@
         "lib": [
             "dom",
             "es5",
-            "es2015.core"
+            "es2015.core",
+            "es2015.collection",
+            "es2015.promise"
+        ],
+        "typeRoots": [
+            "node_modules/@types"
         ]
     },
     "include": [

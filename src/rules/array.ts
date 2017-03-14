@@ -6,8 +6,8 @@ import {
     IRuleValidationParams,
     NonOperatingRule,
     Rule,
-} from '../types/rule';
-import { SingeValRule, SyncRule } from '../types/syncRule';
+} from '../types/Rule';
+import { SingeValRule, SyncRule } from '../types/SyncRule';
 import { async, clone } from '../util';
 
 class ArrayValidator extends SyncRule {
@@ -22,7 +22,7 @@ class ArrayValidator extends SyncRule {
         return undefined;
     }
 
-    public validateSync(params: IRuleValidationParams<any>) {
+    public validateSync(params: IRuleValidationParams<any, void>) {
         if (!Array.isArray(params.value)) {
             return false;
         }
@@ -41,6 +41,10 @@ class ArrayValidator extends SyncRule {
     public static ruleName() {
         return 'array';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be an array.`;
+    }
 }
 
 export class Sparse extends NonOperatingRule {
@@ -55,6 +59,10 @@ export class Sparse extends NonOperatingRule {
 
     public static ruleName() {
         return 'array.sparse';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be an array.`;
     }
 }
 
@@ -71,6 +79,10 @@ export class Single extends NonOperatingRule {
     public static ruleName() {
         return 'array.single';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be an array.`;
+    }
 }
 
 export class Items extends Rule {
@@ -79,7 +91,7 @@ export class Items extends Rule {
         this.schema = params.args[0];
     }
 
-    public validate(params: IRuleValidationParams<any[]>, callback: (error?: Error, data?: any) => void) {
+    public validate(params: IRuleValidationParams<any[], void>, callback: (error?: Error, data?: any) => void) {
         return async.map(
             params.value, (item, index) => {
                 const options = clone(params.options);
@@ -96,6 +108,10 @@ export class Items extends Rule {
     public static ruleName() {
         return 'array.items';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be an array.`;
+    }
 }
 
 export class Ordered extends Rule {
@@ -104,7 +120,7 @@ export class Ordered extends Rule {
         this.schemas = params.args;
     }
 
-    public validate(params: IRuleValidationParams<any[]>, callback: (error?: Error, data?: any) => void) {
+    public validate(params: IRuleValidationParams<any[], void>, callback: (error?: Error, data?: any) => void) {
         const length = this.schemas.length;
         const expected = params.value.length;
         if (length !== expected) {
@@ -125,11 +141,15 @@ export class Ordered extends Rule {
     public static ruleName() {
         return 'array.ordered';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be ordered.`;
+    }
 }
 
 export class MinItems extends SingeValRule<number> {
 
-    public validateSync(params: IRuleValidationParams<any[]>) {
+    public validateSync(params: IRuleValidationParams<any[], void>) {
         const length = params.value.length;
         const min = this.val;
         if (length < min) {
@@ -142,10 +162,14 @@ export class MinItems extends SingeValRule<number> {
     public static ruleName() {
         return 'array.min';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must have at least ${this.val} elements.`;
+    }
 }
 
 export class MaxItems extends SingeValRule<number> {
-    public validateSync(params: IRuleValidationParams<any[]>) {
+    public validateSync(params: IRuleValidationParams<any[], void>) {
         const length = params.value.length;
         const max = this.val;
         if (length > max) {
@@ -158,11 +182,15 @@ export class MaxItems extends SingeValRule<number> {
     public static ruleName() {
         return 'array.max';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" may not have more than ${this.val} elements.`;
+    }
 }
 
 export class LengthExact extends SingeValRule<number> {
 
-    public validateSync(params: IRuleValidationParams<any[]>) {
+    public validateSync(params: IRuleValidationParams<any[], void>) {
         const length = params.value.length;
         const expected = this.val;
         if (length !== expected) {
@@ -175,21 +203,20 @@ export class LengthExact extends SingeValRule<number> {
     public static ruleName() {
         return 'array.length';
     }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must have exactly ${this.val} elements.`;
+    }
 }
 
 export class Unique extends SyncRule {
-    public validateSync(params: IRuleValidationParams<any[]>) {
+    public validateSync(params: IRuleValidationParams<any[], void>) {
         const v = params.value;
         const l = v.length;
         for (let i = 0; i < l; i++) {
             for (let k = i + 1; k < l; k++) {
                 if (deepEqual(v[i], v[k])) {
-                    return {
-                        violator: {
-                            index: k,
-                            value: v[k],
-                        },
-                    };
+                    return false;
                 }
             }
         }
@@ -199,5 +226,9 @@ export class Unique extends SyncRule {
 
     public static ruleName() {
         return 'array.unique';
+    }
+
+    public getErrorMessage(params: IRuleValidationParams<any, void>): string {
+        return `"${params.key}" must be unique but has duplicate.`;
     }
 }

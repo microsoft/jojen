@@ -1,6 +1,6 @@
-import { IRuleValidationParams, Rule } from './rule';
+import { IRuleValidationParams, Rule } from './Rule';
 
-export type validatorFn = (params: IRuleValidationParams<any>, callback: (error?: Error) => void) => void;
+export type validatorFn = (params: IRuleValidationParams<any, void>, callback: (error?: Error) => void) => void;
 
 /**
  * The CompiledRule uses a precompiled function (built on the .compile()
@@ -10,7 +10,7 @@ export abstract class CompiledRule extends Rule {
 
     private validateInternal: validatorFn;
 
-    public validate (params: IRuleValidationParams<any>, callback: (error?: Error) => void) {
+    public validate (params: IRuleValidationParams<any, void>, callback: (error?: Error) => void) {
         return this.validateInternal(params, callback);
     }
 

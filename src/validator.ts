@@ -1,11 +1,10 @@
 import { IAnySchema } from './compiledSchemas';
 import { ValidationError } from './errors';
-import { ILanguagePack, lang } from './lang';
 import * as allRules from './rules';
 import { Default } from './rules/any';
 import { Ruleset } from './Ruleset';
-import { IndexableSchema, Schema } from './Schema';
-import { IRuleCtor, Rule } from './types/rule';
+import { Schema } from './Schema';
+import { IRuleCtor, Rule } from './types/Rule';
 import { assign } from './util';
 
 const defaultOptions = Object.freeze({
@@ -22,10 +21,10 @@ export interface IValidationOptions {
 }
 
 function values<T>(obj: T): T[keyof T][] {
-    const keys = Object.keys(obj);
+    const keys = <(keyof T)[]>Object.keys(obj);
     const ret = [];
     for (let i = 0; i < keys.length; ++i) {
-        ret.push(keys[i]);
+        ret.push(obj[keys[i]]);
     }
     return <any>ret;
 }
@@ -45,7 +44,6 @@ export interface IValidationResult<T> {
 export class Validator {
     private ruleset = new Ruleset();
     private schema: Schema;
-    private lang: ILanguagePack = lang;
     constructor() {
         this.add(defaultRules);
     }
@@ -96,6 +94,7 @@ export class Validator {
                     value: v,
                     validator: this,
                     path: options.path,
+                    meta: {},
                 },
                 (err, res) => {
                     if (err) {
@@ -111,12 +110,11 @@ export class Validator {
                             err.addStackTrace();
                         }
 
-                        err.attach(this.lang);
                         callback(err, v);
                         return;
                     }
 
-                    if (res && res.abort) {
+                    if (res && (<{ abort: boolean }>res).abort) {
                         callback(null, v);
                         return;
                     }

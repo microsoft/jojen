@@ -1,7 +1,7 @@
 import {
     IRuleCtor,
     Rule,
-} from './types/rule';
+} from './types/Rule';
 
 export class RuleParams {
     private index: number;

@@ -4,7 +4,7 @@ import {
     IRuleValidationParams,
     NonOperatingRule,
     Rule,
-} from '../types/rule';
+} from '../types/Rule';
 import { async } from '../util';
 
 export class AlternativesValidator extends Rule {
@@ -18,7 +18,7 @@ export class AlternativesValidator extends Rule {
         }
     }
 
-    public validate(params: IRuleValidationParams<any>, callback: ((error: Error) => void)) {
+    public validate(params: IRuleValidationParams<any, void>, callback: ((error: Error) => void)) {
         const schemaChecks = this.schemas.map(schema =>
             (done: (error: Error) => void) => params.validator.validate(params.value, schema, params.options, done),
         );
@@ -32,6 +32,10 @@ export class AlternativesValidator extends Rule {
 
     public static ruleName() {
         return 'alternatives';
+    }
+
+    public getErrorMessage(): string {
+        return '';
     }
 }
 
@@ -48,5 +52,9 @@ export class Try extends NonOperatingRule {
 
     public static ruleName() {
         return 'alternatives.try';
+    }
+
+    public getErrorMessage(): string {
+        return '';
     }
 }

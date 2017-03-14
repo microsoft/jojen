@@ -1,4 +1,4 @@
-import globalJo from '../lib';
+const globalJo = require('../src');
 
 describe('any', () => {
     it('works for any values', () => {

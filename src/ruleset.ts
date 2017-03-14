@@ -1,5 +1,5 @@
 import { Schema } from './Schema';
-import { IRuleCtor, Rule } from './types/rule';
+import { IRuleCtor, Rule } from './types/Rule';
 import { Validator } from './validator';
 
 /**

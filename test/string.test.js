@@ -1,4 +1,4 @@
-import urlFixtures from './string.fixture';
+const urlFixtures = require('./string.fixture');
 
 describe('string', () => {
     it('will only validate strings', () => {

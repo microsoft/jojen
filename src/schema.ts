@@ -1,7 +1,7 @@
 import { RuleParams } from './RuleParams';
 import { Ruleset } from './Ruleset';
-import { Rule } from './types/rule';
-import { IRuleCtor } from './types/rule';
+import { Rule } from './types/Rule';
+import { IRuleCtor } from './types/Rule';
 
 /**
  * The Schema is an immutable object used for building definitions
@@ -89,4 +89,3 @@ export class Schema {
         return this.rules;
     }
 }
-

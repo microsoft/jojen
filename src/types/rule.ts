@@ -4,19 +4,19 @@ import { ValidationError } from '../errors';
 import { priority } from '../priority';
 import { RuleParams } from '../RuleParams';
 import { IValidationOptions, Validator } from '../validator';
-import { IRuleValidationParams } from './rule';
 
 export interface IRuleCtor<T extends Rule> extends Function {
-    new (value?: any) : T;
+    new (value?: any): T;
     ruleName(): string;
 }
 
-export interface IRuleValidationParams<T> {
+export interface IRuleValidationParams<T, R> {
     value: T;
     validator: Validator;
     path: string[];
     options: IValidationOptions;
     key?: string;
+    meta: R;
 }
 
 /**
@@ -53,7 +53,10 @@ export abstract class Rule {
      * Returns whether or not the provided value passes validation. It should
      * return an array of ValidationErrors if it fails.
      */
-    public abstract validate(params: IRuleValidationParams<any>, cb: (err: ValidationError, value?: any) => void): void;
+    public abstract validate(params: IRuleValidationParams<any, any>, cb: (err: ValidationError, value?: boolean | {
+        rule?: string;
+        abort?: boolean;
+    }) => void): void;
 
     /**
      * Attempts to coerce the value to the match this rule. This will only
@@ -70,7 +73,7 @@ export abstract class Rule {
     /**
      * Returns a single ValidationError Used to signal a failure on *this* rule.
      */
-    public error (params: IRuleValidationParams<any>, info?: {}): ValidationError {
+    public error (params: IRuleValidationParams<any, void>, info?: {}): ValidationError {
         return new ValidationError(this, params, info);
     }
 
@@ -105,9 +108,13 @@ export abstract class Rule {
     public static ruleName (): string {
         throw new Error('not implemented');
     }
+
+    public abstract getErrorMessage (params: IRuleValidationParams<any, any>): string; /*{
+        return `Failed to validate rule ${this.name()} on key ${params.key}`;
+    }*/
 }
 
-export class NonOperatingRule extends Rule {
+export abstract class NonOperatingRule extends Rule {
     public validate(_params: Object, _cb: (err: ValidationError, value?: any) => void): void {
         throw new Error('Should never be called');
     }

@@ -1,5 +1,4 @@
-import { ILanguagePack } from './lang';
-import { IRuleValidationParams, Rule } from './types/rule';
+import { IRuleValidationParams, Rule } from './types/Rule';
 import { assign, pick } from './util';
 
 export interface IStackTraceCapturer {
@@ -16,7 +15,7 @@ export class ValidationError extends Error {
         key: string;
         rule: string;
         ruleParams: any[];
-    } & IRuleValidationParams<any>;
+    } & IRuleValidationParams<any, void>;
     public details: {
         message?: string;
         path: string;
@@ -26,7 +25,7 @@ export class ValidationError extends Error {
         }
     }[];
 
-    constructor (rule: Rule, params: IRuleValidationParams<any>, info: {}) {
+    constructor (rule: Rule, params: IRuleValidationParams<any, void>, info: {}) {
         super();
         const key = params.path[params.path.length - 1];
         const opts = assign(
@@ -45,26 +44,8 @@ export class ValidationError extends Error {
             path: opts.path.join('.'),
             type: opts.rule,
             context: { key },
+            message: rule.getErrorMessage(params),
         }];
-    }
-
-    /**
-     * Attaches the error to a language definition in
-     * order to fill out its details.
-     */
-    public attach (language: ILanguagePack) {
-        if (!language) {
-            return;
-        }
-
-        for (let i = 0; i < this.details.length; i++) {
-            const detail = this.details[i];
-            if (!language.hasOwnProperty(detail.type)) {
-                continue;
-            }
-
-            detail.message = language[detail.type](this.opts);
-        }
     }
 
     /**
@@ -95,7 +76,8 @@ export class ValidationError extends Error {
         if (isCapturer(Error)) {
             Error.captureStackTrace(this);
         } else {
-            this.stack = (new Error()).stack;
+            // workaround for conflicting typings
+            this.stack = new (<any>Error)().stack;
         }
     }
 
