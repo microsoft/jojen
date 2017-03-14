@@ -8,13 +8,14 @@ import {
 import { async } from '../util';
 
 export class AlternativesValidator extends Rule {
-    protected schemas: Schema[];
+    protected schemas: Schema[] = [];
     public compile(params: RuleParams) {
-        const arr = params.args[0];
+        // fixme: This is weird.
+        const arr = params.args[0][0];
         if (Array.isArray(arr)) {
-            this.schemas = arr;
-        } else {
-            this.schemas = [];
+            this.schemas = this.schemas.concat(arr);
+        } else if (arr) {
+            this.schemas.push(arr);
         }
     }
 
@@ -27,7 +28,7 @@ export class AlternativesValidator extends Rule {
     }
 
     public add(alts: Schema[]) {
-        this.schemas = this.schemas.concat(alts);
+        this.schemas.push(...alts);
     }
 
     public static ruleName() {
@@ -46,7 +47,7 @@ export class Try extends NonOperatingRule {
 
     public compile(params: RuleParams) {
         params.invokeLast(AlternativesValidator, v => {
-            v.add(params.args);
+            v.add(Array.isArray(params.args[0]) ? params.args[0] : [params.args[0]]);
         });
     }
 

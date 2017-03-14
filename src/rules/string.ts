@@ -257,9 +257,12 @@ export class IP extends SyncRule {
                 allowed: this.versions,
             };
         }
-        return {
-            reason,
-        };
+        if (reason) {
+            return {
+                reason,
+            };
+        }
+        return true;
     }
 
     public static ruleName(): string {
@@ -275,7 +278,7 @@ export class IP extends SyncRule {
             case 'cidr-not-allowed':
                 return `"${params.key}" must not contain a CIDR.`;
             default:
-                throw new Error('wut');
+                return `"${params.key}" must be an ip address.`;
         }
     }
 }

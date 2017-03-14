@@ -10,7 +10,7 @@ import { assign } from './util';
 const defaultOptions = Object.freeze({
     captureStack: false,
     convert: true,
-    _path: [],
+    path: [],
     // todo(connor4312): fill out the rest of the Joi options
 });
 
@@ -106,7 +106,7 @@ export class Validator {
                             }
                         }
 
-                        if (options.captureStack) {
+                        if (options.captureStack && err.addStackTrace) {
                             err.addStackTrace();
                         }
 

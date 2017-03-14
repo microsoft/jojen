@@ -73,7 +73,8 @@ export abstract class Rule {
     /**
      * Returns a single ValidationError Used to signal a failure on *this* rule.
      */
-    public error (params: IRuleValidationParams<any, void>, info?: {}): ValidationError {
+    public error (params: IRuleValidationParams<any, any>, info?: {}): ValidationError {
+        params.meta = info;
         return new ValidationError(this, params, info);
     }
 

@@ -152,20 +152,4 @@ describe('string', () => {
         expect(Jo => Jo.string().trim()).to.not.failOn(' AAAA ');
     });
 
-    it('will validate iso dates', () => {
-        expect(Jo => Jo.string().isoDate()).to.not.failOn('1997');
-        expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07');
-        expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07-16');
-        expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07-16T19:20+01:00');
-        expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07-16T19:20:30+01:00');
-        expect(Jo => Jo.string().isoDate()).to.not.failOn('1997-07-16T19:20:30.45+01:00');
-
-        expect(Jo => Jo.string().isoDate()).to.failOn('19:20:30');
-        expect(Jo => Jo.string().isoDate()).to.failOn('1997-07-16T25:20:30.45+01:00');
-        expect(Jo => Jo.string().isoDate()).to.failOn('-07-16T25:20:30.45+01:00');
-        expect(Jo => Jo.string().isoDate()).to.failOn('sjkdghsdfl');
-        expect(Jo => Jo.string().isoDate()).to.failOn('1997-07-16T25:20:30.');
-        expect(Jo => Jo.string().isoDate()).to.failOn('22 April 1996');
-        expect(Jo => Jo.string().isoDate()).to.failOn('April 22, 1996');
-    });
 });

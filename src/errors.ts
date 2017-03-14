@@ -27,8 +27,7 @@ export class ValidationError extends Error {
 
     constructor (rule: Rule, params: IRuleValidationParams<any, void>, info: {}) {
         super();
-        console.log(params);
-        const key = params.path[params.path.length - 1];
+        const key = params.path[params.path.length - 1] || 'value';
         const opts = assign(
             {
                 key,
@@ -38,6 +37,8 @@ export class ValidationError extends Error {
             params,
             info,
         );
+
+        params.key = key;
 
         this.opts = opts;
 
