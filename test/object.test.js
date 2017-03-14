@@ -1,4 +1,4 @@
-const Jo = require('../src');
+const Jo = require('../src').jo;
 
 describe('object', () => {
     it('validates types', () => {

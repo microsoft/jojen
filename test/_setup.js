@@ -1,13 +1,14 @@
 'use strict';
 
 const Joi = require('joi');
-const Jo = require('../src');
+const Jo = require('../src').jo;
 const chai = require('chai');
 const Assertion = chai.Assertion;
 const util = require('util');
 
 const expect = global.expect = chai.expect;
 const assert = global.assert = chai.assert;
+
 
 function prettyPrintSchema(schema) {
     return schema.getRules().map((rule) => {

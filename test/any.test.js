@@ -1,4 +1,4 @@
-const globalJo = require('../src');
+const globalJo = require('../src').jo;
 
 describe('any', () => {
     it('works for any values', () => {
