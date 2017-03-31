@@ -64,7 +64,7 @@ describe('array', () => {
         expect((Jo) => Jo.array().unique((a, b) => a.a === b.a)).not.to.failOn([{ a: 1, b: 2 }, { a: 2, b: 2 }, { a: 3, b: 1 }]);
         expect((Jo) => Jo.array().unique((a, b) => a.a !== b.a)).to.failOn([{ a: 1, b: 2 }, { a: 2, b: 2 }, { a: 3, b: 1 }]);
 
-        expect((Jo) => Jo.array().unique((a, b) => true)).to.failOn([{ a: 1 }, { a: 2}]);
-        expect((Jo) => Jo.array().unique((a, b) => false)).not.to.failOn([{ a: 1 }, { a: 2}]);
+        expect((Jo) => Jo.array().unique((a, b) => true)).to.failOn([{ a: 1 }, { a: 2 }]);
+        expect((Jo) => Jo.array().unique((a, b) => false)).not.to.failOn([{ a: 1 }, { a: 2 }]);
     });
 });
