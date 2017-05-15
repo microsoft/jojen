@@ -6,7 +6,7 @@
   "typings": "dist/index",
   "scripts": {
     "build": "tsc",
-    "lint": "tslint --project tsconfig.json \"src/**/*.ts\"",
+    "lint": "tslint --type-check -t stylish --project tsconfig.json \"src/**/*.ts\"",
     "test": "npm run lint",
     "test:unit": "mocha --compilers ts:ts-node/register test/_setup.js \"test/**/*.test.js\""
   },
@@ -37,9 +37,9 @@
     "joi": "^9.0.1",
     "mocha": "^2.3.4",
     "progress": "^1.1.8",
-    "ts-node": "^2.1.0",
-    "tslint": "^4.4.2",
-    "tslint-microsoft-contrib": "^4.0.0",
+    "ts-node": "^3.0.4",
+    "tslint": "^5.2.0",
+    "tslint-microsoft-contrib": "^5.0.0",
     "typescript": "^2.1.6"
   },
   "dependencies": {

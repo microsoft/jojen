@@ -23,6 +23,27 @@
     "no-increment-decrement": false,
     "no-reserved-keywords": false,
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
-    "no-suspicious-comment": false
+    "no-suspicious-comment": false,
+    "typedef": [
+        false
+    ],
+    "max-classes-per-file": [
+        false
+    ],
+    "newline-before-return": [
+        false
+    ],
+    "prefer-for-of": false,
+    "member-ordering": [
+        false
+    ],
+    "no-parameter-properties": false,
+    "no-unnecessary-callback-wrapper": false,
+    "no-unsafe-any": false,
+    "completed-docs": [
+        false
+    ],
+    "strict-boolean-expressions": false,
+    "no-void-expression": false
   }
 }
