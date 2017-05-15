@@ -6,11 +6,11 @@ import { SyncRule } from '../types/SyncRule';
  */
 export class BooleanValidator extends SyncRule {
 
-    public coerce (value: any): boolean {
-        if (value === 'true' || Number(value) === 1) {
+    public coerce(value: any): boolean {
+        if (value === 'true') {
             return true;
         }
-        if (value === 'false' || Number(value) === 0) {
+        if (value === 'false') {
             return false;
         }
         return undefined;

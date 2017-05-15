@@ -44,6 +44,7 @@
         false
     ],
     "strict-boolean-expressions": false,
-    "no-void-expression": false
+    "no-void-expression": false,
+    "unified-signatures": false
   }
 }

@@ -24,6 +24,8 @@ export interface IArraySchema extends IAnySchema  {
     max(max: number): IArraySchema;
     length(length: number): IArraySchema;
     unique(): IArraySchema;
+    unique(prop: string): IArraySchema;
+    unique(comp: (a: any, b: any) => boolean): IArraySchema;
 }
 
 // tslint:disable-next-line

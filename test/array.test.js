@@ -53,5 +53,18 @@ describe('array', () => {
 
         expect((Jo) => Jo.array().unique()).not.to.failOn([{ a: 1 }, { a: 2 }, { b: 2 }]);
         expect((Jo) => Jo.array().unique()).to.failOn([{ a: 1 }, { a: 2 }, { a: 2 }]);
+
+        expect((Jo) => Jo.array().unique('a')).not.to.failOn([{ a: 1, b: 2 }, { a: 2, b: 3 }, { a: 3, b: 1 }]);
+        expect((Jo) => Jo.array().unique('a')).to.failOn([{ a: 1, b: 2 }, { a: 1, b: 3 }, { a: 3, b: 1 }]);
+        expect((Jo) => Jo.array().unique('a')).not.to.failOn([{ a: 1, b: 2 }, { a: 2, b: 2 }, { a: 3, b: 1 }]);
+
+        expect((Jo) => Jo.array().unique('a.b')).not.to.failOn([{ a: { b: 1 }}, { a: { b: 2 }}, { a: { b: 3 }}]);
+        expect((Jo) => Jo.array().unique('a.b')).to.failOn([{ a: { b: 1 }}, { a: { b: 1 }}, { a: { b: 2 }}]);
+
+        expect((Jo) => Jo.array().unique((a, b) => a.a === b.a)).not.to.failOn([{ a: 1, b: 2 }, { a: 2, b: 2 }, { a: 3, b: 1 }]);
+        expect((Jo) => Jo.array().unique((a, b) => a.a !== b.a)).to.failOn([{ a: 1, b: 2 }, { a: 2, b: 2 }, { a: 3, b: 1 }]);
+
+        expect((Jo) => Jo.array().unique((a, b) => true)).to.failOn([{ a: 1 }, { a: 2 }]);
+        expect((Jo) => Jo.array().unique((a, b) => false)).not.to.failOn([{ a: 1 }, { a: 2 }]);
     });
 });

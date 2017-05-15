@@ -123,3 +123,24 @@ export function clone<T>(obj: T): T {
 export function escapeRegExp(str: string) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
+
+/**
+ * Get the (nested) property defined by `propStr` out of the `obj`.
+ */
+export function get(obj: any, propStr: string): any {
+    if (typeof propStr !== 'string') {
+        throw new Error('propString should be a string');
+    }
+
+    const parts = propStr.split('.');
+    const l = parts.length;
+    let curr = obj;
+    for (let i = 0; i < l; ++i) {
+        const k = parts[i];
+        if (!curr[k]) {
+            return curr[k];
+        }
+        curr = curr[k];
+    }
+    return curr;
+}

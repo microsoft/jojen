@@ -8,7 +8,7 @@ import {
     Rule,
 } from '../types/Rule';
 import { SingeValRule, SyncRule } from '../types/SyncRule';
-import { async, clone } from '../util';
+import { async, clone, get } from '../util';
 
 class ArrayValidator extends SyncRule {
     public allowSingle = false;
@@ -210,12 +210,30 @@ export class LengthExact extends SingeValRule<number> {
 }
 
 export class Unique extends SyncRule {
-    public validateSync(params: IRuleValidationParams<any[], void>) {
+    private key: string;
+    private compFn: (a: any, b: any) => boolean;
+    public compile(params: RuleParams) {
+        const comp = params.args[0];
+        if (typeof comp === 'string') {
+            this.key = comp;
+        } else if (comp instanceof Function) {
+            this.compFn = comp;
+        }
+    }
+
+    public validateSync(params: IRuleValidationParams<any[], void>): boolean {
         const v = params.value;
         const l = v.length;
+        const compare = this.compFn || deepEqual;
         for (let i = 0; i < l; i++) {
             for (let k = i + 1; k < l; k++) {
-                if (deepEqual(v[i], v[k])) {
+                let isEqual = false;
+                if (this.key) {
+                    isEqual = deepEqual(get(v[i], this.key), get(v[k], this.key));
+                } else {
+                    isEqual = compare(v[i], v[k]);
+                }
+                if (isEqual) {
                     return false;
                 }
             }
