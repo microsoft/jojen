@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/WatchBeam/jojen.git"
+    "url": "git+ssh://git@github.com/mixer/jojen.git"
   },
   "keywords": [
     "joi",
@@ -26,9 +26,9 @@
   "author": "Connor Peet <connor@peet.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/WatchBeam/jojen/issues"
+    "url": "https://github.com/mixer/jojen/issues"
   },
-  "homepage": "https://github.com/WatchBeam/jojen#readme",
+  "homepage": "https://github.com/mixer/jojen#readme",
   "devDependencies": {
     "@types/deep-equal": "0.0.30",
     "@types/node": "^6.0.65",

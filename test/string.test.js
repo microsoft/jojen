@@ -121,8 +121,8 @@ describe('string', () => {
     });
 
     it('will validate hostnames', () => {
-        expect(Jo => Jo.string().hostname()).to.not.failOn('beam.pro');
-        expect(Jo => Jo.string().hostname()).to.not.failOn('developer.beam.pro');
+        expect(Jo => Jo.string().hostname()).to.not.failOn('mixer.pro');
+        expect(Jo => Jo.string().hostname()).to.not.failOn('developer.mixer.pro');
         expect(Jo => Jo.string().hostname()).to.not.failOn('sdouigbsdogs');
         expect(Jo => Jo.string().hostname()).to.not.failOn('127.0.0.1');
         expect(Jo => Jo.string().hostname()).to.not.failOn('abcd::abcd');
